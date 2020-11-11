@@ -1,4 +1,5 @@
 from tkinter import *
+from tkcalendar import Calendar, DateEntry
 import sys
 
 
@@ -35,7 +36,7 @@ class MainWindow(object):
         self.save_report_button.pack()
         self.load_report_button = Button(text='Load Report', width=15, height=1, state=DISABLED, )
         self.load_report_button.pack()
-        self.new_report_button = Button(text='New Report', width=15, height=1, state=DISABLED, )
+        self.new_report_button = Button(text='New Report', width=15, height=1, command=self.calendar )
         self.new_report_button.pack()
 
     def popup(self):
@@ -43,6 +44,15 @@ class MainWindow(object):
         self.select_sub_button['state'] = 'disabled'
         self.master.wait_window(self.w.top)
         self.select_sub_button['state'] = 'normal'
+
+    def calendar(self):
+        top = Toplevel(root)
+
+        Label(top, text='Choose date').pack(padx=10, pady=10)
+
+        self.cal = DateEntry(top, width=12, background='darkblue',
+                        foreground='white', borderwidth=2)
+        self.cal.pack(padx=10, pady=10)
 
     def entryValue(self):
         return self.w.value
