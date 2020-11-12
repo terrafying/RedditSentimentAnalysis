@@ -102,19 +102,19 @@ class MainWindow(object):
         self.master.wait_window(self.w.top)
         self.select_sub_button['state'] = 'normal'
         self.select_date_button['state'] = 'normal'
-        self.collect_data_button['state'] = 'normal'
 
     # function for the collect data button
     def collect_data(self):
         print(sub_name)
         print(date)
 
-    # calendar function
+    # calendar function - only enable data collection once a subreddit and a date have been chosen
     def calendar(self):
         self.w = CalendarWindow(self.master)
         self.select_date_button['state'] = 'disabled'
         self.master.wait_window(self.w.top)
         self.select_date_button['state'] = 'normal'
+        self.collect_data_button['state'] = 'normal'
 
 
 #TODO: finalize and clean this up
