@@ -35,7 +35,7 @@ class MainWindow(object):
         self.select_sub_button = Button(master, text='Select Subreddit', command=self.popup)
         self.select_sub_button.pack(side=LEFT)
         self.left_pane.add(self.select_sub_button)
-        self.collect_data_button = Button(master, text='Collect Data',
+        self.collect_data_button = Button(master, text='Collect Data', width=15, height=1,
                                           command=lambda: sys.stdout.write(self.entryValue() + '\n'), state=DISABLED, )
         self.collect_data_button.pack(side=LEFT)
         self.left_pane.add(self.collect_data_button)
@@ -51,6 +51,9 @@ class MainWindow(object):
         self.new_report_button = Button(text='New Report', width=15, height=1, command=self.calendar)
         self.new_report_button.pack(side=LEFT)
         self.left_pane.add(self.new_report_button)
+        # the right hand pane will contain the formatted data gathered from pushshift and analyzed by the analyzer
+        # note that the label here is a placeholder for the actual widgets that will go inside of right_pane
+        # while left_pane is reserved for control button widgets
         self.place_holder_label = Label(text='Placeholder for Report')
         self.place_holder_label.pack(side=RIGHT)
         self.right_pane.add(self.place_holder_label)
@@ -67,6 +70,9 @@ class MainWindow(object):
         self.master.wait_window(self.w.top)
         self.select_sub_button['state'] = 'normal'
         self.collect_data_button['state'] = 'normal'
+
+    def collect_data(self):
+        print('test')
 
     def calendar(self):
         top = Toplevel(root)
