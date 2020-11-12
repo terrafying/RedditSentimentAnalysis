@@ -26,12 +26,16 @@ class PopupWindow(object):
 # class for main GUI window
 class MainWindow(object):
     def __init__(self, master):
+
+        # set up GUI
         self.master = master
         master.geometry("500x300")
         master.title('Reddit Sentiment Analyzer')
         self.pane = PanedWindow(orient='horizontal')
         self.left_pane = PanedWindow(orient='vertical')
         self.right_pane = PanedWindow(orient='vertical')
+
+        # code for GUI control buttons
         self.new_report_button = Button(text='New Report', width=15, height=1, command=self.calendar)
         self.new_report_button.pack(side=LEFT)
         self.left_pane.add(self.new_report_button)
@@ -51,6 +55,7 @@ class MainWindow(object):
         self.load_report_button = Button(text='Load Report', width=15, height=1, state=DISABLED, )
         self.load_report_button.pack(side=LEFT)
         self.left_pane.add(self.load_report_button)
+
         # the right hand pane will contain the formatted data gathered from pushshift and analyzed by the analyzer
         # note that the label here is a placeholder for the actual widgets that will go inside of right_pane
         # while left_pane is reserved for control button widgets
@@ -71,9 +76,11 @@ class MainWindow(object):
         self.select_sub_button['state'] = 'normal'
         self.collect_data_button['state'] = 'normal'
 
+    # function for the collect data button
     def collect_data(self):
         print('test')
 
+    # calendar function
     def calendar(self):
         top = Toplevel(root)
         Label(top, text='Choose date').pack(padx=10, pady=10)
@@ -81,10 +88,11 @@ class MainWindow(object):
                              foreground='white', borderwidth=2)
         self.cal.pack(padx=10, pady=10)
 
+    # entry value function
     def entryValue(self):
         return self.w.value
 
-
+# instantiate GUI
 if __name__ == "__main__":
     root = Tk()
     m = MainWindow(root)
