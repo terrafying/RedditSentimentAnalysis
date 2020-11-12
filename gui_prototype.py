@@ -23,6 +23,22 @@ class PopupWindow(object):
         self.top.destroy()
 
 
+# class for date selection popup window
+class CalendarWindow(object):
+
+    def __init__(self, master):
+        top = self.top = Toplevel(root)
+        self.l = Label(top, text='Choose date').pack(padx=10, pady=10)
+        self.cal = DateEntry(top, width=12, background='darkblue',
+                             foreground='white', borderwidth=2)
+        self.cal.pack(padx=10, pady=10)
+        self.b = Button(top, text='Ok', command=self.cleanup)
+        self.b.pack()
+
+    def cleanup(self):
+        self.top.destroy()
+
+
 # class for main GUI window
 class MainWindow(object):
     def __init__(self, master):
@@ -54,7 +70,7 @@ class MainWindow(object):
         self.save_report_button = Button(text='Save Report', width=15, height=1, state=DISABLED, )
         self.save_report_button.pack(side=LEFT)
         self.left_pane.add(self.save_report_button)
-        self.load_report_button = Button(text='Load Report', width=15, height=1, state=DISABLED, )
+        self.load_report_button = Button(text='Load Report', width=15, height=1, )
         self.load_report_button.pack(side=LEFT)
         self.left_pane.add(self.load_report_button)
 
@@ -85,16 +101,10 @@ class MainWindow(object):
 
     # calendar function
     def calendar(self):
-        top = Toplevel(root)
-        Label(top, text='Choose date').pack(padx=10, pady=10)
-        self.cal = DateEntry(top, width=12, background='darkblue',
-                             foreground='white', borderwidth=2)
-        self.cal.pack(padx=10, pady=10)
-        self.b = Button(top, text='Ok', command=self.cleanup)
-        self.b.pack()
-
-    def cleanup(self):
-        self.top.destroy()
+        self.w = CalendarWindow(self.master)
+        self.select_date_button['state'] = 'disabled'
+        self.master.wait_window(self.w.top)
+        self.select_date_button['state'] = 'normal'
 
     # entry value function
     def entryValue(self):
