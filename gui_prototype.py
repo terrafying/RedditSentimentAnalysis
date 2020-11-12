@@ -26,7 +26,6 @@ class PopupWindow(object):
 # class for main GUI window
 class MainWindow(object):
     def __init__(self, master):
-
         # set up GUI
         self.master = master
         master.geometry("500x300")
@@ -42,6 +41,9 @@ class MainWindow(object):
         self.select_sub_button = Button(master, text='Select Subreddit', command=self.popup)
         self.select_sub_button.pack(side=LEFT)
         self.left_pane.add(self.select_sub_button)
+        self.select_date_button = Button(master, text='Select Date', command=self.calendar, state=DISABLED)
+        self.select_date_button.pack(side=LEFT)
+        self.left_pane.add(self.select_date_button)
         self.collect_data_button = Button(master, text='Collect Data', width=15, height=1,
                                           command=lambda: sys.stdout.write(self.entryValue() + '\n'), state=DISABLED, )
         self.collect_data_button.pack(side=LEFT)
@@ -74,6 +76,7 @@ class MainWindow(object):
         self.select_sub_button['state'] = 'disabled'
         self.master.wait_window(self.w.top)
         self.select_sub_button['state'] = 'normal'
+        self.select_date_button['state'] = 'normal'
         self.collect_data_button['state'] = 'normal'
 
     # function for the collect data button
@@ -87,10 +90,16 @@ class MainWindow(object):
         self.cal = DateEntry(top, width=12, background='darkblue',
                              foreground='white', borderwidth=2)
         self.cal.pack(padx=10, pady=10)
+        self.b = Button(top, text='Ok', command=self.cleanup)
+        self.b.pack()
+
+    def cleanup(self):
+        self.top.destroy()
 
     # entry value function
     def entryValue(self):
         return self.w.value
+
 
 # instantiate GUI
 if __name__ == "__main__":
