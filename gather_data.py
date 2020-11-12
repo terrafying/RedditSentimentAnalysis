@@ -2,15 +2,17 @@ from psaw import PushshiftAPI
 from datetime import datetime
 from typing import List, Generator, NamedTuple
 import json
+import gzip
 # PRAW to interact with reddit
 import praw
+import os
 
 api = PushshiftAPI()
 
 MAX_ITEMS = 100000
 
-before = int(datetime(2020, 8, 1).timestamp())
-after  = int(datetime(2020, 9, 1).timestamp())
+before = int(datetime(2020, 9, 1).timestamp())
+after  = int(datetime(2020, 8, 1).timestamp())
 
 # Reddit API Wrapper
 reddit = praw.Reddit(client_id='dwvhQN_PoUCoAw',
@@ -18,11 +20,12 @@ reddit = praw.Reddit(client_id='dwvhQN_PoUCoAw',
                      user_agent='news on hooks')
 
 def gather_submissions(subreddit):
-    submissions: List[NamedTuple] = list(
-        api.search_submissions( after=after,
+    submissions: Generator[NamedTuple] = api.search_submissions(
+                                before=before,
+                                after=after,
                                 subreddit=subreddit,
-                                limit=MAX_ITEMS)
-        )
+                                )
+
     return parse_psaw_to_list(submissions)
 
 def gather_comments(subreddit):
@@ -34,7 +37,7 @@ def gather_comments(subreddit):
         limit=MAX_ITEMS)
     return parse_psaw_to_list(gen)
 
-def parse_psaw_to_list(l):
+def parse_psaw_to_list(l: Generator):
     # Pushshift api wrapper returns objects with attribute "d_" containing dict
     for c in l:
         date = datetime.fromtimestamp(c.d_['created'])
@@ -47,10 +50,10 @@ def replies_of(_top_level_comment):
     else:
         for num, comment in enumerate(_top_level_comment.replies):
             if comment.body:
-                yield comment.body
+                yield comment
             else:
                 continue
-            replies_of(comment)
+            yield replies_of(comment)
 
 def top_posts_and_comments(subreddit):
     top_posts = reddit.subreddit(subreddit).top('week', limit=5)
@@ -63,11 +66,19 @@ def top_posts_and_comments(subreddit):
 
 if __name__ == '__main__':
     sub = 'Cryptocurrency'
-    with open(f'data/reddit/{sub}_submissions_{before}_{after}.json', 'w') as f:
-        json.dump(gather_submissions(sub), f, indent=2)
 
-    with open(f'data/reddit/{sub}_comments_{before}_{after}.json', 'w') as f:
-        json.dump(gather_comments('Cryptocurrency'), f, indent=2)
+
+    f_name = f'data/reddit/{sub}_submissions_{before}_{after}.json.gz'
+    if not os.path.exists(f_name):
+        with gzip.open(f_name, 'wt', encoding="utf-8") as zipfile:
+            json.dump(list(gather_submissions(sub)), zipfile, indent=2)
+
+    f_name = f'data/reddit/{sub}_comments_{before}_{after}.json.gz'
+    if not os.path.exists(f_name):
+        with gzip.open(f_name, 'wt', encoding="utf-8") as zipfile:
+            json.dump(list(gather_comments(sub)), zipfile, indent=2)
+
+
 
 
 
