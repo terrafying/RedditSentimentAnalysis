@@ -1,25 +1,26 @@
 from tkinter import *
 from tkcalendar import Calendar, DateEntry
 import sys
+from datetime import date
 
+sub_name = ''
+date = date.today()
 
 # class for popup window to enter subreddit name, store off to variable
 class PopupWindow(object):
 
     def __init__(self, master):
-        global sub_name
         top = self.top = Toplevel(master)
         self.l = Label(top, text="Enter a Subreddit Name")
         self.l.pack()
         self.e = Entry(top)
         self.e.pack()
-        sub_name = self.e.get()
         self.b = Button(top, text='Ok', command=self.cleanup)
         self.b.pack()
 
     def cleanup(self):
-        self.value = self.e.get()
-        sub_name = self.value
+        global sub_name
+        sub_name = self.e.get()
         self.top.destroy()
 
 
@@ -36,6 +37,8 @@ class CalendarWindow(object):
         self.b.pack()
 
     def cleanup(self):
+        global date
+        date = self.cal.get_date()
         self.top.destroy()
 
 
@@ -61,7 +64,7 @@ class MainWindow(object):
         self.select_date_button.pack(side=LEFT)
         self.left_pane.add(self.select_date_button)
         self.collect_data_button = Button(master, text='Collect Data', width=15, height=1,
-                                          command=lambda: sys.stdout.write(self.entryValue() + '\n'), state=DISABLED, )
+                                          command=self.collect_data, state=DISABLED, )
         self.collect_data_button.pack(side=LEFT)
         self.left_pane.add(self.collect_data_button)
         self.build_report_button = Button(text='Build Report', width=15, height=1, state=DISABLED, )
@@ -97,7 +100,8 @@ class MainWindow(object):
 
     # function for the collect data button
     def collect_data(self):
-        print('test')
+        print(sub_name)
+        print(date)
 
     # calendar function
     def calendar(self):
@@ -105,10 +109,6 @@ class MainWindow(object):
         self.select_date_button['state'] = 'disabled'
         self.master.wait_window(self.w.top)
         self.select_date_button['state'] = 'normal'
-
-    # entry value function
-    def entryValue(self):
-        return self.w.value
 
 
 # instantiate GUI
