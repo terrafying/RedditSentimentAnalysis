@@ -1,4 +1,6 @@
 from tkinter import *
+from tkinter import filedialog
+
 from tkcalendar import Calendar, DateEntry
 import sys
 from datetime import date
@@ -6,12 +8,14 @@ from datetime import date
 # global variables
 sub_name = ''
 date = date.today()
-#TODO: class containing json dump for stored report data, then feeding it into tkinter text widget as first step of report view
+
+
+# TODO: class containing json dump for stored report data, then feeding it into tkinter text widget as first step of report view
 
 # class for popup window to enter subreddit name, store off to variable
 class PopupWindow(object):
 
-    #TODO: add some level of validation to make sure there is a valid name entered
+    # TODO: add some level of validation to make sure there is a valid name entered
     def __init__(self, master):
         top = self.top = Toplevel(master)
         self.l = Label(top, text="Enter a Subreddit Name")
@@ -46,10 +50,30 @@ class CalendarWindow(object):
         self.top.destroy()
 
 
+# class for filebrowser to save file
+# TODO: set this to write json object returned from pushshift to file_to_save
+class FileBrowserSave(object):
+    def __init__(self, master):
+        top = self.top = Toplevel(root)
+        file_to_save = filedialog.asksaveasfilename(initialdir='/', title='Save Report as',
+                                                    filetypes=(("json files", "*.json"), ("all files", "*.*")))
+        print(file_to_save)
+
+
+# class for filebrowser to open file
+# TODO: set this to read a saved json object
+class FileBrowserOpen(object):
+    def __init__(self, master):
+        top = self.top = Toplevel(root)
+        file_to_open = filedialog.asksopenfilename(initialdir='/', title='Select File to Open',
+                                                   filetypes=(("json files", "*.json"), ("all files", "*.*")))
+        print(file_to_open)
+
+
 # class for main GUI window
 class MainWindow(object):
-    #TODO: report build, load, save functionality
-    #TODO: hook into gather_data, analyzer code
+    # TODO: report build, load, save functionality
+    # TODO: hook into gather_data, analyzer code
     def __init__(self, master):
         # set up GUI
         self.master = master
@@ -70,16 +94,17 @@ class MainWindow(object):
         self.select_date_button.pack(side=LEFT)
         self.left_pane.add(self.select_date_button)
         self.collect_data_button = Button(master, text='Collect Data', width=15, height=1,
-                                          command=self.collect_data, state=DISABLED, )
+                                          command=self.collect_data, state=DISABLED)
         self.collect_data_button.pack(side=LEFT)
         self.left_pane.add(self.collect_data_button)
-        self.build_report_button = Button(text='Build Report', width=15, height=1, state=DISABLED, )
+        self.build_report_button = Button(text='Build Report', width=15, height=1, state=DISABLED)
         self.build_report_button.pack(side=LEFT)
         self.left_pane.add(self.build_report_button)
-        self.save_report_button = Button(text='Save Report', width=15, height=1, state=DISABLED, )
+        self.save_report_button = Button(text='Save Report', width=15, height=1, command=self.save_report,
+                                         state=DISABLED)
         self.save_report_button.pack(side=LEFT)
         self.left_pane.add(self.save_report_button)
-        self.load_report_button = Button(text='Load Report', width=15, height=1, )
+        self.load_report_button = Button(text='Load Report', height=1, width=15, command=self.open_report())
         self.load_report_button.pack(side=LEFT)
         self.left_pane.add(self.load_report_button)
 
@@ -108,6 +133,12 @@ class MainWindow(object):
         print(sub_name)
         print(date)
 
+    def save_report(self):
+        self.w = FileBrowserSave(self.master)
+
+    def open_report(self):
+        self.w = FileBrowserOpen(self.master)
+
     # calendar function - only enable data collection once a subreddit and a date have been chosen
     def calendar(self):
         self.w = CalendarWindow(self.master)
@@ -117,7 +148,7 @@ class MainWindow(object):
         self.collect_data_button['state'] = 'normal'
 
 
-#TODO: finalize and clean this up
+# TODO: finalize and clean this up
 # instantiate GUI
 if __name__ == "__main__":
     root = Tk()
