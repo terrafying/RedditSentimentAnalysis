@@ -3,12 +3,15 @@ from tkcalendar import Calendar, DateEntry
 import sys
 from datetime import date
 
+# global variables
 sub_name = ''
 date = date.today()
+#TODO: class containing json dump for stored report data, then feeding it into tkinter text widget as first step of report view
 
 # class for popup window to enter subreddit name, store off to variable
 class PopupWindow(object):
 
+    #TODO: add some level of validation to make sure there is a valid name entered
     def __init__(self, master):
         top = self.top = Toplevel(master)
         self.l = Label(top, text="Enter a Subreddit Name")
@@ -27,6 +30,7 @@ class PopupWindow(object):
 # class for date selection popup window
 class CalendarWindow(object):
 
+    # TODO: Make this a date range instead of single date
     def __init__(self, master):
         top = self.top = Toplevel(root)
         self.l = Label(top, text='Choose date').pack(padx=10, pady=10)
@@ -44,6 +48,8 @@ class CalendarWindow(object):
 
 # class for main GUI window
 class MainWindow(object):
+    #TODO: report build, load, save functionality
+    #TODO: hook into gather_data, analyzer code
     def __init__(self, master):
         # set up GUI
         self.master = master
@@ -111,6 +117,7 @@ class MainWindow(object):
         self.select_date_button['state'] = 'normal'
 
 
+#TODO: finalize and clean this up
 # instantiate GUI
 if __name__ == "__main__":
     root = Tk()
