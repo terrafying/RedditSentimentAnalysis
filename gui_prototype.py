@@ -32,6 +32,9 @@ class MainWindow(object):
         self.pane = PanedWindow(orient='horizontal')
         self.left_pane = PanedWindow(orient='vertical')
         self.right_pane = PanedWindow(orient='vertical')
+        self.new_report_button = Button(text='New Report', width=15, height=1, command=self.calendar)
+        self.new_report_button.pack(side=LEFT)
+        self.left_pane.add(self.new_report_button)
         self.select_sub_button = Button(master, text='Select Subreddit', command=self.popup)
         self.select_sub_button.pack(side=LEFT)
         self.left_pane.add(self.select_sub_button)
@@ -48,9 +51,6 @@ class MainWindow(object):
         self.load_report_button = Button(text='Load Report', width=15, height=1, state=DISABLED, )
         self.load_report_button.pack(side=LEFT)
         self.left_pane.add(self.load_report_button)
-        self.new_report_button = Button(text='New Report', width=15, height=1, command=self.calendar)
-        self.new_report_button.pack(side=LEFT)
-        self.left_pane.add(self.new_report_button)
         # the right hand pane will contain the formatted data gathered from pushshift and analyzed by the analyzer
         # note that the label here is a placeholder for the actual widgets that will go inside of right_pane
         # while left_pane is reserved for control button widgets
