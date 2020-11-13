@@ -10,7 +10,7 @@ api = PushshiftAPI()
 MAX_ITEMS = 100000
 
 before = int(datetime(2020, 8, 1).timestamp())
-after  = int(datetime(2020, 9, 1).timestamp())
+after = int(datetime(2020, 9, 1).timestamp())
 
 # Reddit API Wrapper
 reddit = praw.Reddit(client_id='dwvhQN_PoUCoAw',
