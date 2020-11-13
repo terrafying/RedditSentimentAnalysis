@@ -17,3 +17,15 @@ This project uses Git LFS to track large files, so make sure to initialize & che
     - `source env/bin/activate`
 - Install dependencies
     - `pip install -r requirements.txt`
+
+## API Credentials - credentials.json
+
+A JSON document called 'credentials.json' should be saved in the root directory with the rest of the code,
+formatted as follows:
+
+{
+  "client_id": <client ID from reddit>,
+  "api_key": <secret api key from reddit>,
+  "username": <associated reddit username>,
+  "password": <associated reddit password>
+}

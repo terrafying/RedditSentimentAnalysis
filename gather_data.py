@@ -14,10 +14,12 @@ MAX_ITEMS = 100000
 before = int(datetime(2020, 9, 1).timestamp())
 after  = int(datetime(2020, 8, 1).timestamp())
 
-# Reddit API Wrapper
-reddit = praw.Reddit(client_id='dwvhQN_PoUCoAw',
-                     client_secret='X8N_SZUsiI-CNVIYLToBFFQ-cYE',
-                     user_agent='news on hooks')
+with open('credentials.json') as creds_file:
+    params = json.load(creds_file)
+
+reddit = praw.Reddit(client_id=params['client_id'],
+                     client_secret=params['api_key'],
+                     user_agent='Sentiment Analyzer')
 
 def gather_submissions(subreddit):
     submissions: Generator[NamedTuple] = api.search_submissions(
