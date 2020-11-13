@@ -4,11 +4,15 @@ from tkinter import filedialog
 from tkcalendar import Calendar, DateEntry
 import sys
 from datetime import date
+import re
 
 # global variables
 sub_name = ''
 date_start = date.today()
 date_end = date.today()
+
+# regex for subreddit name validation
+sub_name_pattern = re.compile('[a-zA-Z0-9_-]{3,21}')
 
 
 # TODO: class containing json dump for stored report data, then feeding it into tkinter text widget as first step of
@@ -17,7 +21,6 @@ date_end = date.today()
 # class for popup window to enter subreddit name, store off to variable
 class PopupWindow(object):
 
-    # TODO: add some level of validation to make sure there is a valid name entered
     def __init__(self, master):
         top = self.top = Toplevel(master)
         self.label = Label(top, text="Enter a Subreddit Name")
@@ -29,8 +32,12 @@ class PopupWindow(object):
 
     def cleanup(self):
         global sub_name
-        sub_name = self.entry.get()
-        self.top.destroy()
+        if re.search(sub_name_pattern,self.entry.get()):
+            sub_name = self.entry.get()
+            self.top.destroy()
+        else:
+            # TODO: Prompt user with error message instead of printing it to the console
+            print('Invalid Subreddit name, try again')
 
 
 # class for date selection popup window
