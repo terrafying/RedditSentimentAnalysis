@@ -7,10 +7,12 @@ from datetime import date
 
 # global variables
 sub_name = ''
-date = date.today()
+date_start = date.today()
+date_end = date.today()
 
 
-# TODO: class containing json dump for stored report data, then feeding it into tkinter text widget as first step of report view
+# TODO: class containing json dump for stored report data, then feeding it into tkinter text widget as first step of
+#  report view
 
 # class for popup window to enter subreddit name, store off to variable
 class PopupWindow(object):
@@ -18,16 +20,16 @@ class PopupWindow(object):
     # TODO: add some level of validation to make sure there is a valid name entered
     def __init__(self, master):
         top = self.top = Toplevel(master)
-        self.l = Label(top, text="Enter a Subreddit Name")
-        self.l.pack()
-        self.e = Entry(top)
-        self.e.pack()
+        self.label = Label(top, text="Enter a Subreddit Name")
+        self.label.pack()
+        self.entry = Entry(top)
+        self.entry.pack()
         self.b = Button(top, text='Ok', command=self.cleanup)
         self.b.pack()
 
     def cleanup(self):
         global sub_name
-        sub_name = self.e.get()
+        sub_name = self.entry.get()
         self.top.destroy()
 
 
@@ -38,15 +40,20 @@ class CalendarWindow(object):
     def __init__(self, master):
         top = self.top = Toplevel(root)
         self.l = Label(top, text='Choose date').pack(padx=10, pady=10)
-        self.cal = DateEntry(top, width=12, background='darkblue',
-                             foreground='white', borderwidth=2)
-        self.cal.pack(padx=10, pady=10)
+        self.start_cal = DateEntry(top, width=12, background='darkblue',
+                                   foreground='white', borderwidth=2)
+        self.start_cal.pack(padx=10, pady=10)
+        self.end_cal = DateEntry(top, width=12, background='darkblue',
+                                 foreground='white', borderwidth=2)
+        self.end_cal.pack(padx=10, pady=10)
         self.b = Button(top, text='Ok', command=self.cleanup)
         self.b.pack()
 
     def cleanup(self):
-        global date
-        date = self.cal.get_date()
+        global date_start
+        global date_end
+        date_start = self.start_cal.get_date()
+        date_end = self.end_cal.get_date()
         self.top.destroy()
 
 
@@ -65,8 +72,8 @@ class FileBrowserSave(object):
 class FileBrowserOpen(object):
     def __init__(self, master):
         top = self.top = Toplevel(root)
-        file_to_open = filedialog.asksopenfilename(initialdir='/', title='Select File to Open',
-                                                   filetypes=(("json files", "*.json"), ("all files", "*.*")))
+        file_to_open = filedialog.askopenfilename(initialdir='/', title='Select File to Open',
+                                                  filetypes=(("json files", "*.json"), ("all files", "*.*")))
         print(file_to_open)
 
 
@@ -104,7 +111,7 @@ class MainWindow(object):
                                          state=DISABLED)
         self.save_report_button.pack(side=LEFT)
         self.left_pane.add(self.save_report_button)
-        self.load_report_button = Button(text='Load Report', height=1, width=15, command=self.open_report())
+        self.load_report_button = Button(text='Load Report', height=1, width=15, command=self.open_report)
         self.load_report_button.pack(side=LEFT)
         self.left_pane.add(self.load_report_button)
 
