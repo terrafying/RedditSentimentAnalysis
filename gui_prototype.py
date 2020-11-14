@@ -1,26 +1,15 @@
-from tkinter import *
-from tkinter import filedialog
-
-from matplotlib.backends._backend_tk import NavigationToolbar2Tk
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
-import matplotlib
 import os
+from tkinter import *
+from tkinter import filedialog, messagebox
+import matplotlib
 import gather_data
-
-matplotlib.use("TkAgg")
-
-from setuptools import glob
-from tkcalendar import Calendar, DateEntry
-import sys
+from tkcalendar import DateEntry
 from datetime import date
 import re
+from sentiment_intensity import prepare_data, plot_sentiment_intensity
 
 # global variables
-from bert_sentiment import predict_sentiment
-from sentiment_intensity import apply_sentiment_intensity, prepare_data, plot_sentiment_intensity
-
+matplotlib.use("TkAgg")
 sub_name = ''
 date_start = date.today()
 date_end = date.today()
@@ -28,9 +17,6 @@ date_end = date.today()
 # regex for subreddit name validation
 sub_name_pattern = re.compile('[a-zA-Z0-9_-]{3,21}')
 
-
-# TODO: class containing json dump for stored report data, then feeding it into tkinter text widget as first step of
-#  report view
 
 # class for popup window to enter subreddit name, store off to variable
 class PopupWindow(object):
@@ -46,18 +32,16 @@ class PopupWindow(object):
 
     def cleanup(self):
         global sub_name
-        if re.search(sub_name_pattern,self.entry.get()):
+        if re.search(sub_name_pattern, self.entry.get()):
             sub_name = self.entry.get()
             self.top.destroy()
         else:
-            # TODO: Prompt user with error message instead of printing it to the console
-            print('Invalid Subreddit name, try again')
+            messagebox.showerror("Error", "Invalid Subreddit name, try again")
 
 
 # class for date selection popup window
 class CalendarWindow(object):
 
-    # TODO: Make this a date range instead of single date
     def __init__(self, master):
         top = self.top = Toplevel(root)
         self.l = Label(top, text='Choose date').pack(padx=10, pady=10)
@@ -185,7 +169,6 @@ class MainWindow(object):
 
     # Display report inside pane
     def show_report(self):
-        # TODO: This info should be populated by load_report()
         df = prepare_data('data/reddit/Monero_comments_1598932800_1596254400.json.gz')
         print(df)
         canvas_frame = plot_sentiment_intensity(df, self.master, sub_name=sub_name)
@@ -200,7 +183,6 @@ class MainWindow(object):
         self.collect_data_button['state'] = 'normal'
 
 
-# TODO: finalize and clean this up
 # instantiate GUI
 if __name__ == "__main__":
     root = Tk()
