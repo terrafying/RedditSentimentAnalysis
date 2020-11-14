@@ -84,8 +84,7 @@ class FileBrowserOpen(object):
 
 # class for main GUI window
 class MainWindow(object):
-    # TODO: report build, load, save functionality
-    # TODO: hook into gather_data, analyzer code
+
     def __init__(self, master):
         # set up GUI
         self.master = master
@@ -126,8 +125,7 @@ class MainWindow(object):
         self.load_report_button.pack(side=LEFT)
         self.left_pane.add(self.load_report_button)
 
-        # the right hand pane will contain the formatted data gathered from pushshift and analyzed by the analyzer
-        # note that the label here is a placeholder for the actual widgets that will go inside of right_pane
+        # the right hand pane contains formatted data gathered from pushshift and analyzed by the analyzer
         # while left_pane is reserved for control button widgets
         self.place_holder_label = Label(text='Placeholder for Report')
         self.place_holder_label.pack(side=RIGHT)
