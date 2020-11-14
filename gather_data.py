@@ -72,8 +72,18 @@ def top_posts_and_comments(subreddit: str):
             for reply in replies_of(top_level_comment):
                 yield reply
 
-def cache_data():
-    # TODO: Save/load data from file?
+def gather_to_file(f_name):
+    if os.path.exists(f_name):
+        # Todo: put this message in the GUI?
+        print('file already exists')
+    else:
+        with gzip.open(f_name, 'wt', encoding="utf-8") as zipfile:
+            l = list(gather(sub, gather_type=_gather_type))
+            if len(l) < 2:
+                print('Result is really short! Not saving.')
+                print(l)
+            else:
+                json.dump(l, zipfile, indent=2)
     pass
 
 if __name__ == '__main__':

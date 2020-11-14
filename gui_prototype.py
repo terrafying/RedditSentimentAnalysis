@@ -1,12 +1,26 @@
 from tkinter import *
 from tkinter import filedialog
 
+from matplotlib.backends._backend_tk import NavigationToolbar2Tk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
+import matplotlib
+import os
+import gather_data
+
+matplotlib.use("TkAgg")
+
+from setuptools import glob
 from tkcalendar import Calendar, DateEntry
 import sys
 from datetime import date
 import re
 
 # global variables
+from bert_sentiment import predict_sentiment
+from sentiment_intensity import apply_sentiment_intensity, prepare_data, plot_sentiment_intensity
+
 sub_name = ''
 date_start = date.today()
 date_end = date.today()
@@ -68,7 +82,7 @@ class CalendarWindow(object):
 # TODO: set this to write json object returned from pushshift to file_to_save
 class FileBrowserSave(object):
     def __init__(self, master):
-        top = self.top = Toplevel(root)
+        # top = self.top = Toplevel(root)
         file_to_save = filedialog.asksaveasfilename(initialdir='/', title='Save Report as',
                                                     filetypes=(("json files", "*.json"), ("all files", "*.*")))
         print(file_to_save)
@@ -78,8 +92,8 @@ class FileBrowserSave(object):
 # TODO: set this to read a saved json object
 class FileBrowserOpen(object):
     def __init__(self, master):
-        top = self.top = Toplevel(root)
-        file_to_open = filedialog.askopenfilename(initialdir='/', title='Select File to Open',
+        # top = self.top = Toplevel(root)
+        file_to_open = filedialog.askopenfilename(initialdir=os.getcwd(), title='Select File to Open',
                                                   filetypes=(("json files", "*.json"), ("all files", "*.*")))
         print(file_to_open)
 
@@ -91,7 +105,7 @@ class MainWindow(object):
     def __init__(self, master):
         # set up GUI
         self.master = master
-        master.geometry("500x300")
+        master.geometry("600x400")
         master.title('Reddit Sentiment Analyzer')
         self.pane = PanedWindow(orient='horizontal')
         self.left_pane = PanedWindow(orient='vertical')
@@ -101,19 +115,25 @@ class MainWindow(object):
         self.new_report_button = Button(text='New Report', width=15, height=1, command=self.calendar)
         self.new_report_button.pack(side=LEFT)
         self.left_pane.add(self.new_report_button)
+
         self.select_sub_button = Button(master, text='Select Subreddit', command=self.popup)
         self.select_sub_button.pack(side=LEFT)
         self.left_pane.add(self.select_sub_button)
+
         self.select_date_button = Button(master, text='Select Date', command=self.calendar, state=DISABLED)
         self.select_date_button.pack(side=LEFT)
         self.left_pane.add(self.select_date_button)
+
         self.collect_data_button = Button(master, text='Collect Data', width=15, height=1,
                                           command=self.collect_data, state=DISABLED)
         self.collect_data_button.pack(side=LEFT)
         self.left_pane.add(self.collect_data_button)
-        self.build_report_button = Button(text='Build Report', width=15, height=1, state=DISABLED)
+
+        self.build_report_button = Button(text='Build Report', width=15, height=1, command=self.build_report,
+                                          state=DISABLED)
         self.build_report_button.pack(side=LEFT)
         self.left_pane.add(self.build_report_button)
+
         self.save_report_button = Button(text='Save Report', width=15, height=1, command=self.save_report,
                                          state=DISABLED)
         self.save_report_button.pack(side=LEFT)
@@ -133,17 +153,23 @@ class MainWindow(object):
         self.pane.pack(fill=BOTH, expand=True)
         self.pane.configure(sashrelief=RAISED)
 
+        # To contain extra windows
+        self.popup_window = None
+        self.w = None
+
     # popup window to select daterange and subreddit to query, enables collect data when closed
     # if a subreddit name has been entered
     def popup(self):
-        self.w = PopupWindow(self.master)
+        self.popup_window = PopupWindow(self.master)
         self.select_sub_button['state'] = 'disabled'
-        self.master.wait_window(self.w.top)
+        self.master.wait_window(self.popup_window.top)
         self.select_sub_button['state'] = 'normal'
         self.select_date_button['state'] = 'normal'
+        self.build_report_button['state'] = 'normal'
 
     # function for the collect data button
     def collect_data(self):
+        gather_data.gather(sub_name)
         print(sub_name)
         print(date)
 
@@ -152,6 +178,18 @@ class MainWindow(object):
 
     def open_report(self):
         self.w = FileBrowserOpen(self.master)
+
+    def build_report(self):
+        self.show_report()
+        pass
+
+    # Display report inside pane
+    def show_report(self):
+        # TODO: This info should be populated by load_report()
+        df = prepare_data('data/reddit/Monero_comments_1598932800_1596254400.json.gz')
+        print(df)
+        canvas_frame = plot_sentiment_intensity(df, self.master, sub_name=sub_name)
+        self.right_pane.add(canvas_frame)
 
     # calendar function - only enable data collection once a subreddit and a date have been chosen
     def calendar(self):

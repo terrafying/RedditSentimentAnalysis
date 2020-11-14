@@ -1,11 +1,14 @@
 from datetime import datetime
+from tkinter import Frame
 
 import nltk
 import pandas as pd
-import math
 import matplotlib.pyplot as plt
 # import seaborn as sns
 # sns.set(style='darkgrid', context='talk', palette='Dark2')
+from matplotlib.backends._backend_tk import NavigationToolbar2Tk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
 from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
 from nltk.corpus import stopwords
 
@@ -44,42 +47,76 @@ def prepare_data(f_name, content_column='body') -> pd.DataFrame:
 
 """
 Apply sentiment_method to dataframe
+Return dataframe with results
 """
-def sentiment_intensity(df: pd.DataFrame, content_column='body', sentiment_method=sia.polarity_scores):
-
+def apply_sentiment_intensity(df: pd.DataFrame,
+                              content_column='body',
+                              sentiment_method=sia.polarity_scores,
+                              ax=None):
+    # Expects sentiment_method to return a dictionary object
     x = pd.json_normalize(df[content_column].apply(sentiment_method))
 
     # Select relevant columns
     reduced_df: pd.DataFrame = df[['date']].join(x)
     reduced_df.set_index('date', inplace=True)
 
-    # Plot moving average of results
-    reduced_df.ewm(span=100).mean().plot(
-        label='Moving average', cmap=plt.cm.rainbow)
+    return reduced_df
 
-    print(reduced_df.columns)
-    print(reduced_df.shape)
-    print(reduced_df.head(5))
+def plot_sentiment_intensity(df, master, sub_name):
+    # the figure that will contain the plot
+    fig = Figure(figsize=(5, 5),
+                 dpi=100)
 
-    plt.xlabel('Date')
-    plt.legend()
-    plt.show()
+    # adding the subplot
+    ax = fig.add_subplot(111)
+    canvas_frame = Frame(master)
+    # creating the Tkinter canvas
+    # containing the Matplotlib figure
+    canvas = FigureCanvasTkAgg(fig,
+                               master=canvas_frame)
+    canvas.draw()
+
+    # placing the canvas on the Tkinter window
+    canvas.get_tk_widget().pack()
+
+    df1 = apply_sentiment_intensity(
+        df,
+        content_column='body',
+        ax=ax).ewm(span=100).mean()
+    df1.plot(
+        label='Moving average',
+        cmap=plt.cm.rainbow,
+        ax=ax)
+    print('plotted')
+
+    # creating the Matplotlib toolbar
+    toolbar = NavigationToolbar2Tk(canvas,
+                                   canvas_frame)
+    toolbar.update()
+    toolbar.pack_configure(expand=True)
+
+    # placing the toolbar on the Tkinter window
+    canvas.get_tk_widget().pack()
+
+    return canvas_frame
 
 import glob
-from torch_sentiment import predict_sentiment
+from bert_sentiment import predict_sentiment
 
 if __name__ == '__main__':
     sub = 'Monero'
+
     files = glob.glob(f'data/reddit/{sub}_comments*.gz')
     if len(files) < 1:
         print('No files found!')
         exit(1)
     for filename in files:
         df = prepare_data(filename)
-        sentiment_intensity(
+        apply_sentiment_intensity(
             df,
-            content_column='body')
-        sentiment_intensity(
+            content_column='body').ewm(span=100).mean().plot(label='Moving average',
+        cmap=plt.cm.rainbow)
+        apply_sentiment_intensity(
             df[:100],
             content_column='body',
             sentiment_method=predict_sentiment,
