@@ -8,70 +8,79 @@ import matplotlib.pyplot as plt
 # sns.set(style='darkgrid', context='talk', palette='Dark2')
 from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
 from nltk.corpus import stopwords
+
 nltk.download('stopwords')
 nltk.download('vader_lexicon')
 stop_words = stopwords.words("english")
 import gzip
-import os
+
+# Shortest allowed comment (ignore comments shorter than X chars)
+MINIMUM_COMMENT_LENGTH=20
 
 # set up sentiment analyzer
 sia = SIA()
 
-def vader_sentiment_intensity(f_name, content_column='body', group_by='day', sentiment_method=sia.polarity_scores):
+def prepare_data(f_name, content_column='body') -> pd.DataFrame:
     df = pd.read_json(
         gzip.open(f_name, 'rt', encoding="utf-8"),
         encoding='utf-8'
     )
 
+    # Drop non-useful items
     df.dropna(axis=0, subset=[content_column], inplace=True)
+    df[content_column] = df[content_column].astype('str')
+    # Use only text longer than 20 chars
+    mask = (df[content_column].str.len() > MINIMUM_COMMENT_LENGTH)
+    df = df.loc[mask]
 
     print(df.head(5))
     print(df.shape)
 
-    results = []
+    # Parse UTC timestamp to date
+    df['date'] = pd.to_datetime(df['created_utc'], unit='s', utc=True)
 
-    # df = df[df[content_column] not in ("", "[removed]")]
+    return df
 
-    # analyze headlines
-    for index, row in df.iterrows():
-        pol_score = sentiment_method(row[content_column])
-        df.loc[index, 'pol_score_pos'] = pol_score['pos']
-        df.loc[index, 'pol_score_neg'] = pol_score['neg']
-        # date = datetime.fromtimestamp(row['created_utc'])
-        # df.loc[index, 'hour'] = int(date.hour)
-        df.loc[index, 'block'] = int(row['created_utc'] / 500)
-        pol_score[content_column] = row[content_column]
-        results.append(pol_score)
 
-    reduced_df: pd.DataFrame = df[['day', 'block', 'hour', content_column, 'pol_score_pos', 'pol_score_neg']]
-    mean_df: pd.DataFrame = reduced_df.groupby([group_by]).mean(['pol_score_pos', 'pol_score_neg'])
-    mean_df = mean_df.reset_index()
-    # mean_df = reduced_df.resample(group_by, how='mean')
+"""
+Apply sentiment_method to dataframe
+"""
+def sentiment_intensity(df: pd.DataFrame, content_column='body', sentiment_method=sia.polarity_scores):
 
-    print(mean_df.columns)
-    print(mean_df.shape)
-    print(mean_df.head(5))
+    x = pd.json_normalize(df[content_column].apply(sentiment_method))
 
-    # mean_df.plot()
-    # TODO: Display x-axis by time.  See: https://stackoverflow.com/questions/4090383/plotting-unix-timestamps-in-matplotlib
-    plt.plot('pol_score_pos', data=mean_df, marker='', color='green', linewidth=2)
-    plt.plot('pol_score_neg', data=mean_df, marker='', color='red', linewidth=2)
-    plt.xlabel(group_by)
-    # plt.ylabel('score')
+    # Select relevant columns
+    reduced_df: pd.DataFrame = df[['date']].join(x)
+    reduced_df.set_index('date', inplace=True)
+
+    # Plot moving average of results
+    reduced_df.ewm(span=100).mean().plot(
+        label='Moving average', cmap=plt.cm.rainbow)
+
+    print(reduced_df.columns)
+    print(reduced_df.shape)
+    print(reduced_df.head(5))
+
+    plt.xlabel('Date')
     plt.legend()
     plt.show()
 
-    # beautify the x-labels
-    # plt.gcf().autofmt_xdate()
-    print('max score')
-    max_row: pd.DataFrame = reduced_df[reduced_df.pol_score_pos == df.pol_score_pos.max()]
-    print(
-        max_row[[content_column]]
-    )
-    print(max_row.values[0])
-
+import glob
+from torch_sentiment import predict_sentiment
 
 if __name__ == '__main__':
-    vader_sentiment_intensity(f_name='data/reddit/Cryptocurrency_comments_1598932800_1596254400.json.gz',
-                              content_column='body',
-                              group_by='day')
+    sub = 'Monero'
+    files = glob.glob(f'data/reddit/{sub}_comments*.gz')
+    if len(files) < 1:
+        print('No files found!')
+        exit(1)
+    for filename in files:
+        df = prepare_data(filename)
+        sentiment_intensity(
+            df,
+            content_column='body')
+        sentiment_intensity(
+            df[:100],
+            content_column='body',
+            sentiment_method=predict_sentiment,
+        )

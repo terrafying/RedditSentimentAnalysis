@@ -1,8 +1,7 @@
 psaw~=0.0.12
-torch~=1.7.0
 numpy~=1.19.4
-transformers~=3.5.0
-torchtext~=0.8.0
+transformers~=3.5.1
+torchtext~=0.8
 git+https://github.com/RaRe-Technologies/smart_open@master
 lda~=2.0.0
 nltk~=3.5
@@ -13,3 +12,5 @@ setuptools~=50.3.2
 future~=0.18.2
 tkcalendar~=1.6.1
 textblob~=0.15.3
+pandas~=1.1.4
+matplotlib~=3.3.3
