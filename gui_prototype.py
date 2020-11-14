@@ -6,7 +6,9 @@ import gather_data
 from tkcalendar import DateEntry
 from datetime import date
 import re
-from sentiment_intensity import prepare_data, plot_sentiment_intensity
+
+# Will refactor these imports soon
+from sentiment_intensity import prepare_data, plot_sentiment_intensity_in_frame
 
 # global variables
 matplotlib.use("TkAgg")
@@ -169,7 +171,7 @@ class MainWindow(object):
     def show_report(self):
         df = prepare_data('data/reddit/Monero_comments_1598932800_1596254400.json.gz')
         print(df)
-        canvas_frame = plot_sentiment_intensity(df, self.master, sub_name=sub_name)
+        canvas_frame = plot_sentiment_intensity_in_frame(df, self.master, sub_name=sub_name)
         self.right_pane.add(canvas_frame)
 
     # calendar function - only enable data collection once a subreddit and a date have been chosen

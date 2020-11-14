@@ -1,3 +1,10 @@
+# Code borrowed from
+# https://github.com/bentrevett/pytorch-sentiment-analysis/blob/master/6%20-%20Transformers%20for%20Sentiment%20Analysis.ipynb
+
+# Uses BERT model from
+# "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding"
+# (https://arxiv.org/abs/1810.04805)
+
 import torch
 
 import random

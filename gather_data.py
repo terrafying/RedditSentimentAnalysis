@@ -21,6 +21,7 @@ reddit = praw.Reddit(client_id=params['client_id'],
                      client_secret=params['api_key'],
                      user_agent='Sentiment Analyzer')
 
+#
 def gather(subreddit: str, gather_type='comments') -> Generator:
     if gather_type == 'comments':
         gen: Generator[NamedTuple, None, None] = api.search_comments(

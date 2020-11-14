@@ -14,3 +14,4 @@ tkcalendar~=1.6.1
 textblob~=0.15.3
 pandas~=1.1.4
 matplotlib~=3.3.3
+torch~=1.7.0
