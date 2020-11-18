@@ -12,6 +12,8 @@ from matplotlib.figure import Figure
 from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
 from nltk.corpus import stopwords
 
+from gather_data import ForumDataSource
+
 nltk.download('stopwords')
 nltk.download('vader_lexicon')
 stop_words = stopwords.words("english")
@@ -23,50 +25,46 @@ MINIMUM_COMMENT_LENGTH=20
 # set up sentiment analyzer
 sia = SIA()
 
-
 """
-Build a DataFrame from the saved JSON.
-"""
-def prepare_data(f_name, content_column='body') -> pd.DataFrame:
-    df = pd.read_json(
-        gzip.open(f_name, 'rt', encoding="utf-8"),
-        encoding='utf-8'
-    )
-
-    # Drop empty items
-    df.dropna(axis=0, subset=[content_column], inplace=True)
-    df[content_column] = df[content_column].astype('str')
-    # Use only text longer than 20 chars
-    df = df.loc[df[content_column].str.len() > MINIMUM_COMMENT_LENGTH]
-
-    print(f'preparing data from {f_name}')
-    print(df.head(5))
-
-    # Parse UTC timestamp to date
-    df['date'] = pd.to_datetime(df['created_utc'], unit='s', utc=True)
-
-    return df
-
-
-"""
-Apply sentiment_method to dataframe
+Input: df (load from file)
+Apply SIA Polarity Score to dataframe
 Return dataframe with results
 """
-def apply_sentiment_intensity(df: pd.DataFrame,
-                              content_column='body',
-                              sentiment_method=sia.polarity_scores,
-                              ax=None):
-    # Expects sentiment_method to return a dictionary object
-    x = pd.json_normalize(df[content_column].apply(sentiment_method))
+def apply_sentiment_intensity(df: pd.DataFrame):
+    """
+    :param df: Dataframe containing text to analyze
+    :return: DataFrame indexed by date
+    """
+    # Map the (dict) results of SIA polarity scores onto our data
+    x = pd.json_normalize(df.text.apply(sia.polarity_scores))
 
-    # Select relevant columns
+    # Add date column, index by date
     reduced_df: pd.DataFrame = df[['date']].join(x)
     reduced_df.set_index('date', inplace=True)
 
     return reduced_df
 
+
 """
-Make a pyplot inside a Frame, so we can embed it in the Tkinter GUI.
+Input: Reddit dataframe from the ForumDataSource
+"""
+def plot_sentiment_intensity(df):
+
+    # Apply moving-window average, and plot results
+    df.ewm(span=100).mean().plot(
+        label='Moving average',
+        cmap=plt.cm.rainbow)
+
+
+"""
+This is a convenience method - you don't have to use it, but it's one way to display a pyplot chart inside the GUI.
+
+Makes a pyplot inside a Frame
+
+Input: 
+DataFrame containing sentiment intensity scores (from apply_sentiment_intensity).
+
+Output: A tkinter Frame containing the plot
 """
 def plot_sentiment_intensity_in_frame(df, master, sub_name):
     # the figure that will contain the plot
@@ -85,15 +83,8 @@ def plot_sentiment_intensity_in_frame(df, master, sub_name):
     # placing the canvas on the Tkinter window
     canvas.get_tk_widget().pack()
 
-
-    # Get the DataFrame with sentiment intensity scores
-    df1 = apply_sentiment_intensity(
-        df,
-        content_column='body',
-        ax=ax)
-
     # Apply moving-window average, and plot results
-    df1.ewm(span=100).mean().plot(
+    df.ewm(span=100).mean().plot(
         label='Moving average',
         cmap=plt.cm.rainbow,
         ax=ax)
@@ -112,19 +103,13 @@ def plot_sentiment_intensity_in_frame(df, master, sub_name):
     return canvas_frame
 
 import glob
-from bert_sentiment import predict_sentiment
 
 if __name__ == '__main__':
     # Monero subreddit comment data
     filename = 'data/reddit/Monero_comments_1598932800_1596254400.json.gz'
 
-    df = prepare_data(filename)
-    apply_sentiment_intensity(
-        df,
-        content_column='body').ewm(span=100).mean().plot(label='Moving average',
-    cmap=plt.cm.rainbow)
-    apply_sentiment_intensity(
-        df[:100],
-        content_column='body',
-        sentiment_method=predict_sentiment,
-    )
+    data_source = ForumDataSource()
+    df = data_source.load_from_file(filename)
+
+    df = apply_sentiment_intensity(df)
+    plot_sentiment_intensity(df)

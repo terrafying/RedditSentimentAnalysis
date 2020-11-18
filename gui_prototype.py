@@ -2,13 +2,13 @@ import os
 from tkinter import *
 from tkinter import filedialog, messagebox
 import matplotlib
-import gather_data
+from gather_data import ForumDataSource
 from tkcalendar import DateEntry
 from datetime import date
 import re
 
 # Will refactor these imports soon
-from sentiment_intensity import prepare_data, plot_sentiment_intensity_in_frame
+from sentiment_intensity import plot_sentiment_intensity_in_frame, apply_sentiment_intensity
 
 # global variables
 matplotlib.use("TkAgg")
@@ -123,6 +123,7 @@ class MainWindow(object):
                                          state=DISABLED)
         self.save_report_button.pack(side=LEFT)
         self.left_pane.add(self.save_report_button)
+
         self.load_report_button = Button(text='Load Report', height=1, width=15, command=self.open_report)
         self.load_report_button.pack(side=LEFT)
         self.left_pane.add(self.load_report_button)
@@ -132,11 +133,14 @@ class MainWindow(object):
         self.place_holder_label = Label(text='Placeholder for Report')
         self.place_holder_label.pack(side=RIGHT)
         self.right_pane.add(self.place_holder_label)
+
         self.pane.add(self.left_pane)
         self.pane.add(self.right_pane)
+
         self.pane.pack(fill=BOTH, expand=True)
         self.pane.configure(sashrelief=RAISED)
 
+        self.data_source = ForumDataSource()
         # To contain extra windows
         self.popup_window = None
         self.w = None
@@ -153,7 +157,7 @@ class MainWindow(object):
 
     # function for the collect data button
     def collect_data(self):
-        gather_data.gather(sub_name)
+        self.data_source.gather(sub_name)
         print(sub_name)
         print(date)
 
@@ -169,9 +173,9 @@ class MainWindow(object):
 
     # Display report inside pane
     def show_report(self):
-        df = prepare_data('data/reddit/Monero_comments_1598932800_1596254400.json.gz')
-        print(df)
-        canvas_frame = plot_sentiment_intensity_in_frame(df, self.master, sub_name=sub_name)
+        df = self.data_source.load_from_file('data/reddit/Monero_comments_1598932800_1596254400.json.gz')
+        df = apply_sentiment_intensity(df)
+        canvas_frame = plot_sentiment_intensity_in_frame(df, self.master)
         self.right_pane.add(canvas_frame)
 
     # calendar function - only enable data collection once a subreddit and a date have been chosen

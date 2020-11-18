@@ -29,3 +29,7 @@ formatted as follows:
   "username": <associated reddit username>,
   "password": <associated reddit password>
 }
+
+### References
+
+- "FinBERT: Financial Sentiment Analysis with Pre-trained Language Models": https://arxiv.org/pdf/1908.10063.pdf
