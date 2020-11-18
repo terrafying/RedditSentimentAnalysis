@@ -87,12 +87,19 @@ class ForumDataSource(object):
                 for reply in self.replies_of(top_level_comment):
                     yield reply
 
-    def gather_to_file(self, f_name, subreddit='Monero', gather_type='comments'):
-        if os.path.exists(f_name):
+    def gather_to_file(self, filename, subreddit='Monero', gather_type='comments'):
+        """
+            Gather data from pushshift API (using self.gather()) and record the results to file
+
+            :param filename: Where to save results
+            :param subreddit: Subreddit to scrape
+            :param gather_type: comments or submissions
+        """
+        if os.path.exists(filename):
             # Todo: put this message in the GUI?
             print('file already exists')
         else:
-            with gzip.open(f_name, 'wt', encoding="utf-8") as zipfile:
+            with gzip.open(filename, 'wt', encoding="utf-8") as zipfile:
                 l = list(self.gather(subreddit, gather_type=gather_type))
                 if len(l) < 2:
                     print('Result is really short! Not saving.')
