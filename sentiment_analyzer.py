@@ -139,10 +139,10 @@ class SentimentAnalyzer(object):
         # # Re-populate result with original text
         result['text'] = df.text.values
 
-        date_df: pd.DataFrame = df[['date']].join(result)
-        date_df.set_index('date', inplace=True)
+        # date_df: pd.DataFrame = df[['date']].join(result)
+        result.index = pd.to_datetime(df.date)
 
-        return date_df
+        return result
 
 import os
 
@@ -182,9 +182,8 @@ if __name__ == '__main__':
     pd.set_option('display.width', 1000)
     print(r[['text','prediction','sentiment_score']])
 
-    # save_report(r)
-    r.plot(y='sentiment_score')
+    # r.plot(y='sentiment_score')
 
     df = load_report()
-    df.plot(y='sentiment_score')
-    df.ewm(span=100).plot()
+    df.index = pd.to_datetime(df.date)
+    df.resample("H").mean().plot(title='Hourly mean')

@@ -129,7 +129,7 @@ class ForumDataSource(object):
         # Parse UTC timestamp to date
         df['date'] = pd.to_datetime(df['created_utc'], unit='s', utc=True)
         # Index by date
-        # df.set_index('date', inplace=True)
+        # df.index = pd.to_datetime(df['created_utc'], unit='s', utc=True)
 
         # Standardize text column to 'text'
         df.rename(columns={content_column: 'text'}, inplace=True)
