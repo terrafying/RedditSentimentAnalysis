@@ -157,9 +157,8 @@ class MainWindow(object):
 
     # function for the collect data button
     def collect_data(self):
-        self.data_source.gather(sub_name)
-        print(sub_name)
-        print(date)
+        self.data_source.gui_data_func(sub_name)
+
 
     def save_report(self):
         self.w = FileBrowserSave(self.master)
