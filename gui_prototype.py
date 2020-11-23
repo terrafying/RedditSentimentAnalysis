@@ -159,7 +159,6 @@ class MainWindow(object):
     def collect_data(self):
         self.data_source.gui_data_func(sub_name)
 
-
     def save_report(self):
         self.w = FileBrowserSave(self.master)
 
@@ -167,8 +166,11 @@ class MainWindow(object):
         self.w = FileBrowserOpen(self.master)
 
     def build_report(self):
-        self.show_report()
-        pass
+        try:
+            self.show_report()
+        except:
+            messagebox.showerror("Error", "Invalid file loaded. Please try gathering data again or selecting another dataset.")
+
 
     # Display report inside pane
     def show_report(self):
