@@ -7,7 +7,7 @@ from pytorch_pretrained_bert.modeling import *
 from torch.utils.data import TensorDataset, SequentialSampler, DataLoader
 from transformers import BertTokenizer
 
-from gather_data import ForumDataSource
+from .gather_data import ForumDataSource
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)

@@ -2,13 +2,13 @@ import os
 from tkinter import *
 from tkinter import filedialog, messagebox
 import matplotlib
-from gather_data import ForumDataSource
+from .gather_data import ForumDataSource
 from tkcalendar import DateEntry
 from datetime import date
 import re
 
 # Will refactor these imports soon
-from sentiment_intensity import plot_sentiment_intensity_in_frame, apply_sentiment_intensity
+from .sentiment_intensity import plot_sentiment_intensity_in_frame, apply_sentiment_intensity
 
 # global variables
 matplotlib.use("TkAgg")

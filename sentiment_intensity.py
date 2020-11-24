@@ -12,7 +12,7 @@ from matplotlib.figure import Figure
 from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
 from nltk.corpus import stopwords
 
-from gather_data import ForumDataSource
+from .gather_data import ForumDataSource
 
 nltk.download('stopwords')
 nltk.download('vader_lexicon')
