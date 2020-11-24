@@ -16,19 +16,18 @@ before = int(datetime(2020, 9, 1).timestamp())
 after  = int(datetime(2020, 8, 1).timestamp())
 
 
-def parse_pushshift_data(pushshift_api_response: Generator, gather_type='comments') -> Generator[dict, None, None]:
+def parse_pushshift_data(l: Generator, gather_type='comments') -> Generator[dict, None, None]:
     """
     Parameters
-    -----------
-    pushshift_api_response : Generator from Pushshift api wrapper (result of api.search query)
+    ---------
+    l : Generator from Pushshift api wrapper (result of api.search query)
     gather_type : comments or submissions
-
     Returns
     --------
     Yields dictionary items
     """
     # Pushshift api wrapper returns objects with attribute "d_" containing dict
-    for c in pushshift_api_response:
+    for c in l:
         date = datetime.fromtimestamp(c.d_['created'])
         date_dict = {'day': date.day, 'month': date.month, 'hour': date.hour}
         content_field = 'body' if gather_type == 'comments' else 'selftext'
@@ -41,6 +40,7 @@ class ForumDataSource(object):
     """
     A class to gather reddit scrapes, save and load them from file.
 
+    ...
 
     Attributes
     ----------
@@ -166,7 +166,7 @@ class ForumDataSource(object):
 
         return df
 
-    def gui_data_func(self, sub_name: str) -> object:
+    def gui_data_func(self, sub_name: object) -> object:
         subreddit = sub_name
 
         data_source = ForumDataSource()
