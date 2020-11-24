@@ -8,7 +8,7 @@ This project uses Git LFS to track large files, so make sure to initialize & che
   - OSX: `brew install git-lfs`
 - Pull
   - `git lfs install`
-  - `git lfs checkout`
+  - `git lfs pull`
 
 ## Environment
 - Python 3.8
