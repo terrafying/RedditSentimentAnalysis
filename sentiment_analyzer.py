@@ -1,4 +1,5 @@
 import gzip
+from typing import List
 
 import numpy as np
 import pandas as pd
@@ -9,6 +10,7 @@ from transformers import BertTokenizer
 from gather_data import ForumDataSource
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 
 def softmax(x):
@@ -49,21 +51,13 @@ class SentimentAnalyzer(object):
         self.model.eval()
 
 
-
-    def predict(self, df: pd.DataFrame):
-        """
-        :param df: DataFrame containing 'text' column with posts
-        :return: DataFrame containing 'sentiment' (float) and 'prediction' (integer) columns
-        """
-        # Report the number of sentences.
-        print('Number of sentences: {:,}\n'.format(df.shape[0]))
-
+    def ids(self, text: List[str]):
         # Tokenize all of the sentences and map the tokens to thier word IDs.
         input_ids = []
         attention_masks = []
 
         # For every sentence...
-        for sent in df.text.values:
+        for sent in text:
             # `encode_plus` will:
             #   (1) Tokenize the sentence.
             #   (2) Prepend the `[CLS]` token to the start.
@@ -85,11 +79,23 @@ class SentimentAnalyzer(object):
 
             # And its attention mask (simply differentiates padding from non-padding).
             attention_masks.append(encoded_dict['attention_mask'])
+        return input_ids, attention_masks
+
+    def predict(self, df: pd.DataFrame):
+        """
+        :param df: DataFrame containing 'text' column with posts
+        :return: DataFrame containing 'sentiment' (float) and 'prediction' (integer) columns
+        """
+        # Report the number of sentences.
+        print('Number of sentences: {:,}\n'.format(df.shape[0]))
+
+        input_ids, attention_masks = self.ids(df.text.values)
 
         # Convert the lists into tensors.
         input_ids = torch.cat(input_ids, dim=0)
         attention_masks = torch.cat(attention_masks, dim=0)
 
+        logger.info(f'input ids: {input_ids}')
         # Set the batch size.
         batch_size = 32
 
@@ -163,7 +169,8 @@ class Report(object):
         pass
 
 if __name__ == '__main__':
-    """Example Usage: 
+    """
+    Example Usage: 
     Prepare data from gz file, then submit to sentiment analyzer.
     
     Save the report afterward."""
@@ -182,7 +189,7 @@ if __name__ == '__main__':
     pd.set_option('display.width', 1000)
     print(r[['text','prediction','sentiment_score']])
 
-    # r.plot(y='sentiment_score')
+    # ir.plot(y='sentiment_score')
 
     df = load_report()
     df.index = pd.to_datetime(df.date)

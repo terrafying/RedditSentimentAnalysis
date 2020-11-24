@@ -8,63 +8,87 @@ import pandas as pd
 import praw
 import os
 
-api = PushshiftAPI()
+
 
 MAX_ITEMS = 100000
 
 before = int(datetime(2020, 9, 1).timestamp())
 after  = int(datetime(2020, 8, 1).timestamp())
 
+
+def parse_pushshift_data(l: Generator, gather_type='comments') -> Generator[dict, None, None]:
+    """
+    Parameters
+    ---------
+    l : Generator from Pushshift api wrapper (result of api.search query)
+    gather_type : comments or submissions
+    Returns
+    --------
+    Yields dictionary items
+    """
+    # Pushshift api wrapper returns objects with attribute "d_" containing dict
+    for c in l:
+        date = datetime.fromtimestamp(c.d_['created'])
+        date_dict = {'day': date.day, 'month': date.month, 'hour': date.hour}
+        content_field = 'body' if gather_type == 'comments' else 'selftext'
+        yield {**c.d_, **date_dict,
+               'content': c.d_[content_field]
+               }
+
+
 class ForumDataSource(object):
     """
+    A class to gather reddit scrapes, save and load them from file.
+
+    ...
+
+    Attributes
+    ----------
+    filename : str
+        Where to save data
+    api : PushshiftAPI
+        Instance of pushshift API wrapper
+    reddit : praw.Reddit
+        instance of Reddit API wrapper
 
     """
-    def __init__(self):
-        with open('credentials.json') as creds_file:
-            params = json.load(creds_file)
+    def __init__(self, credentials_file='credentials.json'):
+        with open(credentials_file) as f:
+            params = json.load(f)
+        self.filename = None
         self.reddit = praw.Reddit(client_id=params['client_id'],
                      client_secret=params['api_key'],
                      user_agent='Sentiment Analyzer')
+        self.api = PushshiftAPI()
 
 
     def gather(self, subreddit: str, gather_type='comments') -> Generator:
         """
-        Input
+        Parameters
         -----
-        Subreddit name, and gather_type (either 'comments' or 'submissions')
+        subreddit : Subreddit name
+        gather_type : either 'comments' or 'submissions'
 
         Output
         ------
         Generator object, which yields a NamedTuple containing information about a submission or comment
         """
         if gather_type == 'comments':
-            gen: Generator[NamedTuple, None, None] = api.search_comments(
+            gen: Generator[NamedTuple, None, None] = self.api.search_comments(
                 subreddit='Cryptocurrency',
                 before=before,
                 after=after,
                 limit=MAX_ITEMS)
         else:
-            gen: Generator[NamedTuple, None, None] = api.search_submissions(
+            gen: Generator[NamedTuple, None, None] = self.api.search_submissions(
                                         before=before,
                                         after=after,
                                         subreddit=subreddit,
                                         limit=MAX_ITEMS
                                         )
-        return self.parse_pushshift_data(gen)
+        return parse_pushshift_data(gen)
 
-    """
-    Input: Generator from Pushshift api wrapper (result of api.search query)
-    Output: Yields dictionary items
-    """
-    def parse_pushshift_data(self, l: Generator, type='comments') -> Generator[dict, None, None]:
-        # Pushshift api wrapper returns objects with attribute "d_" containing dict
-        for c in l:
-            date = datetime.fromtimestamp(c.d_['created'])
-            date_dict = {'day': date.day, 'month': date.month, 'hour': date.hour}
-            content_field = 'body' if type=='comments' else 'selftext'
-            yield {**c.d_, **date_dict,
-                   'content': c.d_[content_field]
-                   }
+
 
     # Enumerate replies on a comment
     def replies_of(self, top_level_comment: praw.reddit.Comment) -> Generator[praw.reddit.Comment, None, None]:
@@ -111,8 +135,12 @@ class ForumDataSource(object):
         """
         Build a DataFrame from the saved JSON.
 
-        Input: filename of gzipped JSON
+        :param content_column: Name of the column containing text to analyze.
+        :param filename: filename of gzipped JSON
+
         """
+        self.filename = filename
+
         df: pd.DataFrame = pd.read_json(
             gzip.open(filename, 'rt', encoding="utf-8"),
             encoding='utf-8'
@@ -149,14 +177,14 @@ class ForumDataSource(object):
             data_source.gather_to_file(f_name, subreddit=subreddit, gather_type=gather_type)
 
 if __name__ == '__main__':
-    subreddit = 'Monero'
+    sub = 'Monero'
 
     data_source = ForumDataSource()
 
     # Gather sample data
-    for gather_type in ['submissions', 'comments']:
-        f_name = f'data/reddit/{subreddit}_{gather_type}_{before}_{after}.json.gz'
-        data_source.gather_to_file(f_name, subreddit=subreddit, gather_type=gather_type)
+    for _gather_type in ['submissions', 'comments']:
+        f_name = f'data/reddit/{sub}_{_gather_type}_{before}_{after}.json.gz'
+        data_source.gather_to_file(f_name, subreddit=sub, gather_type=_gather_type)
 
 
 
