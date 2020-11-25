@@ -2,10 +2,11 @@ import numpy as np
 import scipy.sparse as ss
 import matplotlib.pyplot as plt
 
+# Citation: "Anchored CorEx: Hierarchical Topic Modeling with Minimal Domain Knowledge"
+# https://github.com/gregversteeg/corex_topic
 from corextopic import corextopic as ct
-from corextopic import vis_topic as vt # jupyter notebooks will complain matplotlib is being loaded twice
+from corextopic import vis_topic as vt
 
-# from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import CountVectorizer
 
 # Transform 20 newsgroup data into a sparse matrix
@@ -16,20 +17,21 @@ if __name__ == '__main__':
     data_source = ForumDataSource()
     sub = 'Cryptocurrency'
     input_data = data_source.load_from_file(f'data/reddit/{sub}_comments_1598932800_1596254400.json.gz')
+    # Each "Document" is a text comment
     doc_word = vectorizer.fit_transform(input_data.text)
     doc_word = ss.csr_matrix(doc_word)
 
 
     print(doc_word.shape) # n_docs x m_words
 
-    # Get words that label the columns (needed to extract readable topics and make anchoring easier)
+    # Get words that label the columns
     words = list(np.asarray(vectorizer.get_feature_names()))
 
-    # Train the CorEx topic model
+    # Train the CorEx topic model, with some forum-specific anchor words
     topic_model = ct.Corex(n_hidden=50, anchors=[['xmr','monero'], ['btc', 'bitcoin', 'satoshi', 'nakamoto'], ['ltc', 'litecoin'], ['xrp', 'ripple'], ['tezos'], 'exchange'])  # Define the number of latent (hidden) topics to use.
     topic_model.fit(doc_word, words=words)
 
-    # Print all topics from the CorEx topic model
+    # Print all topics from the model
     topics = topic_model.get_topics()
     for n,topic in enumerate(topics):
         topic_words,_ = zip(*topic)

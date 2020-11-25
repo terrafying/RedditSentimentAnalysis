@@ -145,7 +145,7 @@ class SentimentAnalyzer(object):
         # # Re-populate result with original text
         result['text'] = df.text.values
 
-        # date_df: pd.DataFrame = df[['date']].join(result)
+        # Set index as date
         result.index = pd.to_datetime(df.date)
 
         return result
@@ -171,7 +171,7 @@ class Report(object):
 if __name__ == '__main__':
     """
     Example Usage: 
-    Prepare data from gz file, then submit to sentiment analyzer.
+    Prepare data from json file, then submit to sentiment analyzer.
     
     Save the report afterward."""
 
@@ -189,8 +189,7 @@ if __name__ == '__main__':
     pd.set_option('display.width', 1000)
     print(r[['text','prediction','sentiment_score']])
 
-    # ir.plot(y='sentiment_score')
-
+    # Plot hourly mean of sentiment scores
     df = load_report()
     df.index = pd.to_datetime(df.date)
     df.resample("H").mean().plot(title='Hourly mean')

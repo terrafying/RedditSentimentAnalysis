@@ -25,13 +25,9 @@ MINIMUM_COMMENT_LENGTH=20
 # set up sentiment analyzer
 sia = SIA()
 
-"""
-Input: df (load from file)
-Apply SIA Polarity Score to dataframe
-Return dataframe with results
-"""
 def apply_sentiment_intensity(df: pd.DataFrame):
     """
+    Apply SIA Polarity Score to dataframe
     :param df: Dataframe containing text to analyze
     :return: DataFrame indexed by date
     """
