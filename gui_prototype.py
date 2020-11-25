@@ -18,6 +18,7 @@ date_end = date.today()
 
 # regex for subreddit name validation
 sub_name_pattern = re.compile('[a-zA-Z0-9_-]{3,21}')
+global active_file
 
 
 # class for popup window to enter subreddit name, store off to variable
@@ -69,9 +70,8 @@ class CalendarWindow(object):
 class FileBrowserSave(object):
     def __init__(self, master):
         # top = self.top = Toplevel(root)
-        file_to_save = filedialog.asksaveasfilename(initialdir='/', title='Save Report as',
+        active_file = filedialog.asksaveasfilename(initialdir='/', title='Save Report as',
                                                     filetypes=(("json files", "*.json"), ("all files", "*.*")))
-        print(file_to_save)
 
 
 # class for filebrowser to open file
@@ -79,10 +79,8 @@ class FileBrowserSave(object):
 class FileBrowserOpen(object):
     def __init__(self, master):
         # top = self.top = Toplevel(root)
-        file_to_open = filedialog.askopenfilename(initialdir=os.getcwd(), title='Select File to Open',
+        active_file = filedialog.askopenfilename(initialdir=os.getcwd(), title='Select File to Open',
                                                   filetypes=(("json files", "*.json"), ("all files", "*.*")))
-        print(file_to_open)
-
 
 # class for main GUI window
 class MainWindow(object):
@@ -168,13 +166,14 @@ class MainWindow(object):
     def build_report(self):
         try:
             self.show_report()
-        except:
-            messagebox.showerror("Error", "Invalid file loaded. Please try gathering data again or selecting another dataset.")
-
+        except Exception as e:
+            messagebox.showerror("Error",
+                                 "Invalid file loaded. Please try gathering data again or selecting another dataset.")
+            print(e)
 
     # Display report inside pane
     def show_report(self):
-        df = self.data_source.load_from_file('data/reddit/Monero_comments_1598932800_1596254400.json.gz')
+        df = self.data_source.load_from_file('data/reddit/%s' % active_file)
         df = apply_sentiment_intensity(df)
         canvas_frame = plot_sentiment_intensity_in_frame(df, self.master)
         self.right_pane.add(canvas_frame)

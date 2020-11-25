@@ -1,6 +1,6 @@
 from psaw import PushshiftAPI
 from datetime import datetime
-from typing import List, Generator, NamedTuple
+from typing import Generator, NamedTuple
 import json
 import gzip
 import pandas as pd
@@ -8,12 +8,10 @@ import pandas as pd
 import praw
 import os
 
-
-
 MAX_ITEMS = 100000
 
 before = int(datetime(2020, 9, 1).timestamp())
-after  = int(datetime(2020, 8, 1).timestamp())
+after = int(datetime(2020, 8, 1).timestamp())
 
 
 def parse_pushshift_data(l: Generator, gather_type='comments') -> Generator[dict, None, None]:
@@ -52,15 +50,15 @@ class ForumDataSource(object):
         instance of Reddit API wrapper
 
     """
+
     def __init__(self, credentials_file='credentials.json'):
         with open(credentials_file) as f:
             params = json.load(f)
         self.filename = None
         self.reddit = praw.Reddit(client_id=params['client_id'],
-                     client_secret=params['api_key'],
-                     user_agent='Sentiment Analyzer')
+                                  client_secret=params['api_key'],
+                                  user_agent='Sentiment Analyzer')
         self.api = PushshiftAPI()
-
 
     def gather(self, subreddit: str, gather_type='comments') -> Generator:
         """
@@ -81,14 +79,12 @@ class ForumDataSource(object):
                 limit=MAX_ITEMS)
         else:
             gen: Generator[NamedTuple, None, None] = self.api.search_submissions(
-                                        before=before,
-                                        after=after,
-                                        subreddit=subreddit,
-                                        limit=MAX_ITEMS
-                                        )
+                before=before,
+                after=after,
+                subreddit=subreddit,
+                limit=MAX_ITEMS
+            )
         return parse_pushshift_data(gen)
-
-
 
     # Enumerate replies on a comment
     def replies_of(self, top_level_comment: praw.reddit.Comment) -> Generator[praw.reddit.Comment, None, None]:
@@ -111,7 +107,7 @@ class ForumDataSource(object):
                 for reply in self.replies_of(top_level_comment):
                     yield reply
 
-    def gather_to_file(self, filename, subreddit='Monero', gather_type='comments'):
+    def gather_to_file(self, filename, subreddit=object, gather_type='comments'):
         """
             Gather data from pushshift API (using self.gather()) and record the results to file
 
@@ -166,15 +162,16 @@ class ForumDataSource(object):
 
         return df
 
-    def gui_data_func(self, sub_name: object) -> object:
+    @staticmethod
+    def gui_data_func(sub_name: object):
         subreddit = sub_name
-
         data_source = ForumDataSource()
 
         # Gather sample data
         for gather_type in ['submissions', 'comments']:
             f_name = f'data/reddit/{subreddit}_{gather_type}_{before}_{after}.json.gz'
             data_source.gather_to_file(f_name, subreddit=subreddit, gather_type=gather_type)
+
 
 if __name__ == '__main__':
     sub = 'Monero'
@@ -185,7 +182,3 @@ if __name__ == '__main__':
     for _gather_type in ['submissions', 'comments']:
         f_name = f'data/reddit/{sub}_{_gather_type}_{before}_{after}.json.gz'
         data_source.gather_to_file(f_name, subreddit=sub, gather_type=_gather_type)
-
-
-
-
