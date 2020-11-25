@@ -167,11 +167,6 @@ class ForumDataSource(object):
         subreddit = sub_name
         data_source = ForumDataSource()
 
-        # Gather sample data
-        for gather_type in ['submissions', 'comments']:
-            f_name = f'data/reddit/{subreddit}_{gather_type}_{before}_{after}.json.gz'
-            data_source.gather_to_file(f_name, subreddit=subreddit, gather_type=gather_type)
-
 
 if __name__ == '__main__':
     sub = 'Monero'

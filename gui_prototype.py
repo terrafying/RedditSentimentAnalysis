@@ -1,10 +1,11 @@
 import os
+import calendar
 from tkinter import *
 from tkinter import filedialog, messagebox
 import matplotlib
 from gather_data import ForumDataSource
 from tkcalendar import DateEntry
-from datetime import date
+from datetime import date, datetime
 import re
 
 # Will refactor these imports soon
@@ -46,6 +47,9 @@ class PopupWindow(object):
 class CalendarWindow(object):
 
     def __init__(self, master):
+        self.before = int(datetime(2020, 9, 1).timestamp())
+        self.after = int(datetime(2020, 8, 1).timestamp())
+
         top = self.top = Toplevel(root)
         self.l = Label(top, text='Choose date').pack(padx=10, pady=10)
         self.start_cal = DateEntry(top, width=12, background='darkblue',
@@ -60,8 +64,12 @@ class CalendarWindow(object):
     def cleanup(self):
         global date_start
         global date_end
-        date_start = self.start_cal.get_date()
-        date_end = self.end_cal.get_date()
+        # Function to deal with weird difference between date and datetime objects
+        def to_epoch(d: datetime.date):
+            return calendar.timegm(d.timetuple())
+        # Set before and after attributes from calendar dates
+        self.before = to_epoch(self.start_cal.get_date())
+        self.after = to_epoch(self.end_cal.get_date())
         self.top.destroy()
 
 
@@ -152,6 +160,7 @@ class MainWindow(object):
         self.select_sub_button['state'] = 'normal'
         self.select_date_button['state'] = 'normal'
         self.build_report_button['state'] = 'normal'
+        # active_file = f'data/reddit/{sub_name}'
 
     # function for the collect data button
     def collect_data(self):
@@ -165,16 +174,16 @@ class MainWindow(object):
 
     def build_report(self):
         try:
-            self.show_report()
-        except Exception as e:
+            df = self.data_source.load_from_file('data/reddit/%s' % active_file)
+            df = apply_sentiment_intensity(df)
+            self.show_report(df)
+        except FileNotFoundError as e:
             messagebox.showerror("Error",
                                  "Invalid file loaded. Please try gathering data again or selecting another dataset.")
             print(e)
 
     # Display report inside pane
-    def show_report(self):
-        df = self.data_source.load_from_file('data/reddit/%s' % active_file)
-        df = apply_sentiment_intensity(df)
+    def show_report(self, df):
         canvas_frame = plot_sentiment_intensity_in_frame(df, self.master)
         self.right_pane.add(canvas_frame)
 
