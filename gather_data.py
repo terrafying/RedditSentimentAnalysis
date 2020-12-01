@@ -26,12 +26,16 @@ def parse_pushshift_data(l: Generator, gather_type='comments') -> Generator[dict
     """
     # Pushshift api wrapper returns objects with attribute "d_" containing dict
     for c in l:
-        date = datetime.fromtimestamp(c.d_['created'])
-        date_dict = {'day': date.day, 'month': date.month, 'hour': date.hour}
-        content_field = 'body' if gather_type == 'comments' else 'selftext'
-        yield {**c.d_, **date_dict,
-               'content': c.d_[content_field]
-               }
+        try:
+            date = datetime.fromtimestamp(c.d_['created'])
+            date_dict = {'day': date.day, 'month': date.month, 'hour': date.hour}
+            content_field = 'body' if gather_type == 'comments' else 'selftext'
+            yield {**c.d_, **date_dict,
+                   'content': c.d_[content_field]
+                   }
+        except KeyError as e:
+            print(e)
+            continue
 
 
 class ForumDataSource(object):
@@ -164,12 +168,15 @@ class ForumDataSource(object):
 
     @staticmethod
     def gui_data_func(sub_name: object):
-        subreddit = sub_name
         data_source = ForumDataSource()
 
+        # Gather sample data
+        for _gather_type in ['submissions', 'comments']:
+            f_name = f'data/reddit/{sub_name}_{_gather_type}_{before}_{after}.json.gz'
+            data_source.gather_to_file(f_name, subreddit=sub_name, gather_type=_gather_type)
 
 if __name__ == '__main__':
-    sub = 'Monero'
+    sub = 'Stellar'
 
     data_source = ForumDataSource()
 
