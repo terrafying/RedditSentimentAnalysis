@@ -34,7 +34,13 @@ def parse_pushshift_data(l: Generator, gather_type='comments') -> Generator[dict
                    'content': c.d_[content_field]
                    }
         except KeyError as e:
-            print(e)
+            date = datetime.fromtimestamp(c.d_['created'])
+            date_dict = {'day': date.day, 'month': date.month, 'hour': date.hour}
+            content_field = 'selftext'
+            yield {**c.d_, **date_dict,
+                   'content': c.d_[content_field]
+                   }
+            print("Body not found - Keyerror Exception. Using selftext instead.")
             continue
 
 

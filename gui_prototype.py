@@ -89,7 +89,6 @@ class FileBrowserOpen(object):
         # top = self.top = Toplevel(root)
         active_file = filedialog.askopenfilename(initialdir=os.getcwd(), title='Select File to Open',
                                                   filetypes=(("json files", "*.json"), ("all files", "*.*")))
-
 # class for main GUI window
 class MainWindow(object):
 
@@ -174,6 +173,7 @@ class MainWindow(object):
 
     def build_report(self):
         try:
+            active_file = FileBrowserOpen(self.master)
             df = self.data_source.load_from_file('data/reddit/%s' % active_file)
             df = apply_sentiment_intensity(df)
             self.show_report(df)
