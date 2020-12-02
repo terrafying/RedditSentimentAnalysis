@@ -173,8 +173,10 @@ class MainWindow(object):
 
     def build_report(self):
         try:
-            active_file = FileBrowserOpen(self.master)
-            df = self.data_source.load_from_file('data/reddit/%s' % active_file)
+            active_file = filedialog.askopenfilename(initialdir=os.getcwd(), title='Save Report as',
+                                                       filetypes=(("json gz files", "*.gz"), ("all files", "*.*")))
+            print(active_file)
+            df = self.data_source.load_from_file(active_file)
             df = apply_sentiment_intensity(df)
             self.show_report(df)
         except FileNotFoundError as e:
@@ -184,8 +186,9 @@ class MainWindow(object):
 
     # Display report inside pane
     def show_report(self, df):
-        canvas_frame = plot_sentiment_intensity_in_frame(df, self.master)
+        canvas_frame = plot_sentiment_intensity_in_frame(df, self.master, sub_name)
         self.right_pane.add(canvas_frame)
+        canvas_frame.pack()
 
     # calendar function - only enable data collection once a subreddit and a date have been chosen
     def calendar(self):
