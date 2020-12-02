@@ -51,7 +51,7 @@ class CalendarWindow(object):
         self.after = int(datetime(2020, 8, 1).timestamp())
 
         top = self.top = Toplevel(root)
-        self.l = Label(top, text='Choose date').pack(padx=10, pady=10)
+        self.label = Label(top, text='Choose date').pack(padx=10, pady=10)
         self.start_cal = DateEntry(top, width=12, background='darkblue',
                                    foreground='white', borderwidth=2)
         self.start_cal.pack(padx=10, pady=10)
@@ -64,9 +64,12 @@ class CalendarWindow(object):
     def cleanup(self):
         global date_start
         global date_end
+
         # Function to deal with weird difference between date and datetime objects
+
         def to_epoch(d: datetime.date):
             return calendar.timegm(d.timetuple())
+
         # Set before and after attributes from calendar dates
         self.before = to_epoch(self.start_cal.get_date())
         self.after = to_epoch(self.end_cal.get_date())
@@ -79,7 +82,7 @@ class FileBrowserSave(object):
     def __init__(self, master):
         # top = self.top = Toplevel(root)
         active_file = filedialog.asksaveasfilename(initialdir='/', title='Save Report as',
-                                                    filetypes=(("json files", "*.json"), ("all files", "*.*")))
+                                                   filetypes=(("json gz files", "*.gz"), ("all files", "*.*")))
 
 
 # class for filebrowser to open file
@@ -88,7 +91,9 @@ class FileBrowserOpen(object):
     def __init__(self, master):
         # top = self.top = Toplevel(root)
         active_file = filedialog.askopenfilename(initialdir=os.getcwd(), title='Select File to Open',
-                                                  filetypes=(("json files", "*.json"), ("all files", "*.*")))
+                                                 filetypes=(("json gz files", "*.gz"), ("all files", "*.*")))
+
+
 # class for main GUI window
 class MainWindow(object):
 
@@ -170,8 +175,8 @@ class MainWindow(object):
 
     def build_report(self):
         try:
-            active_file = filedialog.askopenfilename(initialdir=os.getcwd(), title='Save Report as',
-                                                       filetypes=(("json gz files", "*.gz"), ("all files", "*.*")))
+            active_file = filedialog.askopenfilename(initialdir=os.getcwd(), title='Open Report',
+                                                     filetypes=(("json gz files", "*.gz"), ("all files", "*.*")))
             print(active_file)
             df = self.data_source.load_from_file(active_file)
             df = apply_sentiment_intensity(df)
