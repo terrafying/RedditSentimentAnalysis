@@ -135,9 +135,6 @@ class MainWindow(object):
 
         # the right hand pane contains formatted data gathered from pushshift and analyzed by the analyzer
         # while left_pane is reserved for control button widgets
-        self.place_holder_label = Label(text='Placeholder for Report')
-        self.place_holder_label.pack(side=RIGHT)
-        self.right_pane.add(self.place_holder_label)
 
         self.pane.add(self.left_pane)
         self.pane.add(self.right_pane)
