@@ -8,7 +8,6 @@ from tkcalendar import DateEntry
 from datetime import date, datetime
 import re
 
-# Will refactor these imports soon
 from sentiment_intensity import plot_sentiment_intensity_in_frame, apply_sentiment_intensity
 
 # global variables
@@ -129,12 +128,7 @@ class MainWindow(object):
         self.build_report_button.pack(side=LEFT)
         self.left_pane.add(self.build_report_button)
 
-        self.save_report_button = Button(text='Save Report', width=15, height=1, command=self.save_report,
-                                         state=DISABLED)
-        self.save_report_button.pack(side=LEFT)
-        self.left_pane.add(self.save_report_button)
-
-        self.load_report_button = Button(text='Load Report', height=1, width=15, command=self.open_report)
+        self.load_report_button = Button(text='Load Report', width=15, height=1, command=self.open_report)
         self.load_report_button.pack(side=LEFT)
         self.left_pane.add(self.load_report_button)
 
