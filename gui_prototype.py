@@ -1,7 +1,7 @@
 import os
 import calendar
 from tkinter import *
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, simpledialog
 import matplotlib
 from gather_data import ForumDataSource
 from tkcalendar import DateEntry
@@ -93,7 +93,7 @@ class FileBrowserOpen(object):
                                                  filetypes=(("json gz files", "*.gz"), ("all files", "*.*")))
 
 
-# class for main GUI window
+# main gui window class
 class MainWindow(object):
 
     def __init__(self, master):

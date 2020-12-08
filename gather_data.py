@@ -1,3 +1,5 @@
+from tkinter import Tk, simpledialog
+
 from psaw import PushshiftAPI
 from datetime import datetime
 from typing import Generator, NamedTuple
@@ -43,6 +45,13 @@ def parse_pushshift_data(l: Generator, gather_type='comments') -> Generator[dict
             print("Body not found - Keyerror Exception. Using selftext instead.")
             continue
 
+# function to prompt user for the authentication values
+def prompt_for_auth_val(value):
+    root = Tk()
+    root.withdraw()
+    user_inp = simpledialog.askstring(title="%s Entry" % value, prompt="Enter your %s" % value)
+
+    return user_inp
 
 class ForumDataSource(object):
     """
@@ -62,13 +71,34 @@ class ForumDataSource(object):
     """
 
     def __init__(self, credentials_file='credentials.json'):
-        with open(credentials_file) as f:
-            params = json.load(f)
-        self.filename = None
-        self.reddit = praw.Reddit(client_id=params['client_id'],
-                                  client_secret=params['api_key'],
-                                  user_agent='Sentiment Analyzer')
-        self.api = PushshiftAPI()
+        try:
+            with open(credentials_file) as f:
+                params = json.load(f)
+            self.filename = None
+            self.reddit = praw.Reddit(client_id=params['client_id'],
+                                      client_secret=params['api_key'],
+                                      user_agent='Sentiment Analyzer')
+            self.api = PushshiftAPI()
+
+        # if credentials.json does not exist, prompt the user for authentication and create the file, then proceed
+        except FileNotFoundError:
+
+            auth_keys = {}
+
+            auth_keys['client_id'] = prompt_for_auth_val('client_id')
+            auth_keys['api_key'] = prompt_for_auth_val('api_key')
+            auth_keys['username'] = prompt_for_auth_val('username')
+            auth_keys['password'] = prompt_for_auth_val('password')
+
+            with open(credentials_file, 'w') as outf:
+                json.dump(auth_keys, outf)
+                load_params = json.dumps(auth_keys)
+                params = json.loads(load_params)
+            self.filename = None
+            self.reddit = praw.Reddit(client_id=params['client_id'],
+                                      client_secret=params['api_key'],
+                                      user_agent='Sentiment Analyzer')
+            self.api = PushshiftAPI()
 
     def gather(self, subreddit: str, gather_type='comments') -> Generator:
         """
@@ -180,6 +210,7 @@ class ForumDataSource(object):
         for _gather_type in ['submissions', 'comments']:
             f_name = f'data/reddit/{sub_name}_{_gather_type}_{before}_{after}.json.gz'
             data_source.gather_to_file(f_name, subreddit=sub_name, gather_type=_gather_type)
+
 
 if __name__ == '__main__':
     sub = 'Stellar'
