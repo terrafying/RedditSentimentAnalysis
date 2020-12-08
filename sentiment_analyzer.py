@@ -155,11 +155,13 @@ import os
 
 class Report(object):
     """
-    TODO: Report object to contain whatever goes into a report
+    Report object to contain Reddit data, plus convenience functions
     """
-    def __init__(self, data: pd.DataFrame, name='report'):
+    def __init__(self, data: pd.DataFrame, name='report', date_start=0, date_end=0):
         self._name = name
         self._data = data
+        self._date_start = date_start
+        self._date_end = date_end
         pass
 
     def save(self, directory='data/reports'):

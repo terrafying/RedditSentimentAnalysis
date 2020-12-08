@@ -8,7 +8,8 @@ from tkcalendar import DateEntry
 from datetime import date, datetime
 import re
 
-from sentiment_intensity import plot_sentiment_intensity_in_frame, apply_sentiment_intensity
+from sentiment_analyzer import Report
+from sentiment_intensity import plot_sentiment_intensity_in_frame, apply_sentiment_intensity, plot_sentiment_intensity
 
 # global variables
 matplotlib.use("TkAgg")
@@ -124,6 +125,14 @@ class MainWindow(object):
         self.build_report_button = Button(text='Build Report', width=15, height=1, command=self.build_report)
         self.build_report_button.pack(side=LEFT)
         self.left_pane.add(self.build_report_button)
+        self.method_selection = StringVar()
+
+        self.add_radio_button()
+
+        # Dummy label to fix pane packing issues
+        self.left_pane.add(Label(root, text=''))
+
+        self.left_pane.pack(side=TOP, fill=NONE)
 
         # the right hand pane contains formatted data gathered from pushshift and analyzed by the analyzer
         # while left_pane is reserved for control button widgets
@@ -131,14 +140,47 @@ class MainWindow(object):
         self.pane.add(self.left_pane)
         self.pane.add(self.right_pane)
 
-        self.pane.pack(fill=BOTH, expand=True)
+
+
+
+        self.pane.pack(fill=BOTH, expand=True, side=TOP)
         self.pane.configure(sashrelief=RAISED)
+
 
         self.data_source = ForumDataSource()
         # To contain extra windows
         self.popup_window = None
         self.w = None
         self.calendar = None
+
+
+
+
+    def add_radio_button(self):
+        label = Label(root,
+                 text="""Sentiment analysis method""",
+                 justify=LEFT,
+                 padx=20)
+        # label.pack()
+
+        self.left_pane.add(label)
+        # label.pack(side=TOP)
+
+        R1 = Radiobutton(root, text="Quick", variable=self.method_selection, value='quick')
+        # R1.pack(anchor=W, side=TOP)
+        R1.select()
+
+        self.left_pane.add(R1)
+
+        R2 = Radiobutton(root, text="Accurate", variable=self.method_selection, value='accurate')
+        # R2.pack(anchor=W, side=TOP)
+
+        self.left_pane.add(R2)
+
+        # self.left_pane.pack(side=TOP)
+
+
+
 
     # popup window to select daterange and subreddit to query, enables collect data when closed
     # if a subreddit name has been entered
@@ -174,6 +216,7 @@ class MainWindow(object):
             sub_name = os.path.basename(active_file).split('_')[0]
             df = self.data_source.load_from_file(active_file)
             df = apply_sentiment_intensity(df)
+            # self.report = Report(df, name=sub_name)
             self.show_report(df)
         except FileNotFoundError as e:
             messagebox.showerror("Error",
@@ -182,9 +225,11 @@ class MainWindow(object):
 
     # Display report inside pane
     def show_report(self, df):
+        # plot_sentiment_intensity(df, sub_name)
         canvas_frame = plot_sentiment_intensity_in_frame(df, self.master, sub_name)
         self.right_pane.add(canvas_frame)
-        canvas_frame.pack()
+        # canvas_frame.pack()
+        # self.pane.pack()
 
     # calendar function - only enable data collection once a subreddit and a date have been chosen
     def calendar(self):

@@ -41,9 +41,9 @@ def apply_sentiment_intensity(df: pd.DataFrame):
 """
 Input: Reddit dataframe from the ForumDataSource
 """
-def plot_sentiment_intensity(df):
-    df.index = pd.to_datetime(df.date)
-    df.resample("H").mean().plot(title=f'Hourly mean score', cmap=plt.cm.rainbow)
+def plot_sentiment_intensity(df, name=''):
+    # df.index = pd.to_datetime(df.date)
+    df.resample("H").mean().plot(title=f'Hourly mean score for {name}', cmap=plt.cm.rainbow)
     # Apply moving-window average, and plot results
     # df.ewm(span=100).mean().plot(
     #     label='Moving average',
@@ -107,4 +107,5 @@ if __name__ == '__main__':
     df = data_source.load_from_file(filename)
 
     df = apply_sentiment_intensity(df)
+    df.index = pd.to_datetime(df.date)
     plot_sentiment_intensity(df)
