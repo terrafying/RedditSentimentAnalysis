@@ -13,6 +13,7 @@ from sentiment_intensity import plot_sentiment_intensity_in_frame, apply_sentime
 # global variables
 matplotlib.use("TkAgg")
 sub_name = ''
+
 date_start = date.today()
 date_end = date.today()
 
@@ -61,9 +62,6 @@ class CalendarWindow(object):
         self.b.pack()
 
     def cleanup(self):
-        global date_start
-        global date_end
-
         # Function to deal with weird difference between date and datetime objects
 
         def to_epoch(d: datetime.date):
@@ -79,7 +77,7 @@ class CalendarWindow(object):
 # TODO: set this to write json object returned from pushshift to file_to_save
 class FileBrowserSave(object):
     def __init__(self, master):
-        # top = self.top = Toplevel(root)
+        global active_file
         active_file = filedialog.asksaveasfilename(initialdir='/', title='Save Report as',
                                                    filetypes=(("json gz files", "*.gz"), ("all files", "*.*")))
 
@@ -88,7 +86,7 @@ class FileBrowserSave(object):
 # TODO: set this to read a saved json object
 class FileBrowserOpen(object):
     def __init__(self, master):
-        # top = self.top = Toplevel(root)
+        global active_file
         active_file = filedialog.askopenfilename(initialdir=os.getcwd(), title='Select File to Open',
                                                  filetypes=(("json gz files", "*.gz"), ("all files", "*.*")))
 
@@ -140,6 +138,7 @@ class MainWindow(object):
         # To contain extra windows
         self.popup_window = None
         self.w = None
+        self.calendar = None
 
     # popup window to select daterange and subreddit to query, enables collect data when closed
     # if a subreddit name has been entered
@@ -150,23 +149,29 @@ class MainWindow(object):
         self.select_sub_button['state'] = 'normal'
         self.select_date_button['state'] = 'normal'
         self.build_report_button['state'] = 'normal'
-        # active_file = f'data/reddit/{sub_name}'
 
     # function for the collect data button
     def collect_data(self):
-        self.data_source.gui_data_func(sub_name)
+        # Gather sample data.  Just comments,.
+        before = self.calendar.before
+        after = self.calendar.after
+        f_name = f'data/reddit/{sub_name}_comments_{before}_{after}.json.gz'
+        self.data_source.gather_to_file(f_name, subreddit=sub_name, gather_type='comments')
 
-    def save_report(self):
-        self.w = FileBrowserSave(self.master)
-
-    def open_report(self):
-        self.w = FileBrowserOpen(self.master)
+    # def save_report(self):
+    #     self.w = FileBrowserSave(self.master)
+    #
+    # def open_report(self):
+    #     self.w = FileBrowserOpen(self.master)
 
     def build_report(self):
+        global active_file
+        global sub_name
         try:
             active_file = filedialog.askopenfilename(initialdir=os.getcwd(), title='Open Report',
                                                      filetypes=(("json gz files", "*.gz"), ("all files", "*.*")))
             print(active_file)
+            sub_name = os.path.basename(active_file).split('_')[0]
             df = self.data_source.load_from_file(active_file)
             df = apply_sentiment_intensity(df)
             self.show_report(df)
@@ -183,9 +188,9 @@ class MainWindow(object):
 
     # calendar function - only enable data collection once a subreddit and a date have been chosen
     def calendar(self):
-        self.w = CalendarWindow(self.master)
+        self.calendar = CalendarWindow(self.master)
         self.select_date_button['state'] = 'disabled'
-        self.master.wait_window(self.w.top)
+        self.master.wait_window(self.calendar.top)
         self.select_date_button['state'] = 'normal'
         self.collect_data_button['state'] = 'normal'
 

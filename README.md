@@ -22,17 +22,15 @@ This project uses Git LFS to track large files, so make sure to initialize & che
 
 A JSON document called 'credentials.json' should be saved in the root directory with the rest of the code,
 formatted as follows:
-
+```json
 {
-  "client_id": <client ID from reddit>,
-  "api_key": <secret api key from reddit>,
-  "username": <associated reddit username>,
-  "password": <associated reddit password>
+  "client_id": "<client ID from reddit>",
+  "api_key": "<secret api key from reddit>",
+  "username": "<associated reddit username>",
+  "password": "<associated reddit password>"
 }
-
-## Documentation
-
-Files
+```
+## Files 
 * sentiment_analyzer.py - Uses a BERT (language representation) model to process the scraped data in batches.  Main method produces some plots of sentiment over time for the Reddit posts. 
 
 * sentiment_intensity.py - The "legacy" version of the above.

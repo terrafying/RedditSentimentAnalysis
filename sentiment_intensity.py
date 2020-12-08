@@ -1,23 +1,20 @@
-from datetime import datetime
-from tkinter import Frame
-
+import matplotlib.pyplot as plt
 import nltk
 import pandas as pd
-import matplotlib.pyplot as plt
 # import seaborn as sns
 # sns.set(style='darkgrid', context='talk', palette='Dark2')
 from matplotlib.backends._backend_tk import NavigationToolbar2Tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
 from nltk.corpus import stopwords
+from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
+from tkinter import Frame
 
 from gather_data import ForumDataSource
 
 nltk.download('stopwords')
 nltk.download('vader_lexicon')
 stop_words = stopwords.words("english")
-import gzip
 
 # Shortest allowed comment (ignore comments shorter than X chars)
 MINIMUM_COMMENT_LENGTH=20
@@ -45,11 +42,12 @@ def apply_sentiment_intensity(df: pd.DataFrame):
 Input: Reddit dataframe from the ForumDataSource
 """
 def plot_sentiment_intensity(df):
-
+    df.index = pd.to_datetime(df.date)
+    df.resample("H").mean().plot(title=f'Hourly mean score', cmap=plt.cm.rainbow)
     # Apply moving-window average, and plot results
-    df.ewm(span=100).mean().plot(
-        label='Moving average',
-        cmap=plt.cm.rainbow)
+    # df.ewm(span=100).mean().plot(
+    #     label='Moving average',
+    #     cmap=plt.cm.rainbow)
 
 
 """
@@ -80,10 +78,11 @@ def plot_sentiment_intensity_in_frame(df, master, sub_name):
     canvas.get_tk_widget().pack()
 
     # Apply moving-window average, and plot results
-    df.ewm(span=100).mean().plot(
-        label='Moving average',
-        cmap=plt.cm.rainbow,
-        ax=ax)
+    df.resample("H").mean().plot(title=f'Hourly mean score for {sub_name}', ax=ax, cmap=plt.cm.rainbow)
+    # df.ewm(span=100).mean().plot(
+    #     label='Moving average',
+    #     cmap=plt.cm.rainbow,
+    #     ax=ax)
 
     print('Plotted moving average')
 
@@ -98,10 +97,10 @@ def plot_sentiment_intensity_in_frame(df, master, sub_name):
 
     return canvas_frame
 
-import glob
 
 if __name__ == '__main__':
     # Monero subreddit comment data
+
     filename = 'data/reddit/Monero_comments_1598932800_1596254400.json.gz'
 
     data_source = ForumDataSource()

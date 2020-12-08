@@ -29,18 +29,18 @@ def parse_pushshift_data(l: Generator, gather_type='comments') -> Generator[dict
     # Pushshift api wrapper returns objects with attribute "d_" containing dict
     for c in l:
         try:
-            date = datetime.fromtimestamp(c.d_['created'])
-            date_dict = {'day': date.day, 'month': date.month, 'hour': date.hour}
-            content_field = 'body' if gather_type == 'comments' else 'selftext'
-            yield {**c.d_, **date_dict,
-                   'content': c.d_[content_field]
-                   }
+            # The item containing the reddit post data
+            item = c.d_
+            # Replace either 'body' or 'selftext' with just 'text'
+            if 'body' in item:
+                item['text'] = item.pop('body')
+            else:
+                item['text'] = item.pop('selftext')
+            yield item
         except KeyError as e:
-            date = datetime.fromtimestamp(c.d_['created'])
-            date_dict = {'day': date.day, 'month': date.month, 'hour': date.hour}
             content_field = 'selftext'
-            yield {**c.d_, **date_dict,
-                   'content': c.d_[content_field]
+            yield {**c.d_,
+                   'text': c.d_[content_field]
                    }
             print("Body not found - Keyerror Exception. Using selftext instead.")
             continue
@@ -100,6 +100,7 @@ class ForumDataSource(object):
                                       user_agent='Sentiment Analyzer')
             self.api = PushshiftAPI()
 
+
     def gather(self, subreddit: str, gather_type='comments') -> Generator:
         """
         Parameters
@@ -147,7 +148,7 @@ class ForumDataSource(object):
                 for reply in self.replies_of(top_level_comment):
                     yield reply
 
-    def gather_to_file(self, filename, subreddit=object, gather_type='comments'):
+    def gather_to_file(self, filename, subreddit: str, gather_type='comments'):
         """
             Gather data from pushshift API (using self.gather()) and record the results to file
 
@@ -167,7 +168,7 @@ class ForumDataSource(object):
                 else:
                     json.dump(l, zipfile, indent=2)
 
-    def load_from_file(self, filename, content_column='body') -> pd.DataFrame:
+    def load_from_file(self, filename, content_column='text') -> pd.DataFrame:
         """
         Build a DataFrame from the saved JSON.
 
@@ -192,24 +193,19 @@ class ForumDataSource(object):
 
         # Parse UTC timestamp to date
         df['date'] = pd.to_datetime(df['created_utc'], unit='s', utc=True)
-        # Index by date
-        # df.index = pd.to_datetime(df['created_utc'], unit='s', utc=True)
 
         # Standardize text column to 'text'
-        df.rename(columns={content_column: 'text'}, inplace=True)
+        # df.rename(columns={content_column: 'text'}, inplace=True)
 
         # columns = ['score','id','date','author','text']
 
         return df
 
-    @staticmethod
-    def gui_data_func(sub_name: object):
-        data_source = ForumDataSource()
-
-        # Gather sample data
-        for _gather_type in ['submissions', 'comments']:
-            f_name = f'data/reddit/{sub_name}_{_gather_type}_{before}_{after}.json.gz'
-            data_source.gather_to_file(f_name, subreddit=sub_name, gather_type=_gather_type)
+    def gui_data_func(self, sub_name: str):
+        # Gather sample data.  Just comments, not submissions.
+        _filename = f'data/reddit/{sub_name}_comments_{before}_{after}.json.gz'
+        self.gather_to_file(_filename, subreddit=sub_name, gather_type='comments')
+        self.filename = _filename
 
 
 if __name__ == '__main__':

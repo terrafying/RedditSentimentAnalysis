@@ -152,37 +152,55 @@ class SentimentAnalyzer(object):
 
 import os
 
-def save_report(report: pd.DataFrame, filename='my_report.csv', directory='data/reports'):
-    with open(os.path.join(directory, filename),'w') as f:
-        f.write(report.to_csv())
-
-def load_report(filename='my_report.csv', directory='data/reports'):
-    with open(os.path.join(directory, filename), 'r') as f:
-        report = pd.read_csv(f)
-    return report
 
 class Report(object):
     """
     TODO: Report object to contain whatever goes into a report
     """
-    def __init__(self):
+    def __init__(self, data: pd.DataFrame, name='report'):
+        self._name = name
+        self._data = data
         pass
+
+    def save(self, directory='data/reports'):
+        with open(os.path.join(directory, self._name + '.csv'), 'w') as f:
+            f.write(self._data.to_csv())
+
+    def __str__(self):
+        s = f"""
+        Name: {self._name}
+        Number of lines: {len(self._data)}
+        """
+
+    @property
+    def data(self):
+        return self._data
+
+
+def load_report(filename='my_report.csv', directory='data/reports') -> Report:
+    with open(os.path.join(directory, filename), 'r') as f:
+        report = Report(pd.read_csv(f), filename.split('.')[0])
+    return report
+
+import glob
 
 if __name__ == '__main__':
     """
-    Example Usage: 
-    Prepare data from json file, then submit to sentiment analyzer.
-    
-    Save the report afterward."""
+    This example shows using data from SentimentAnalyzer to produce a graph.
+    """
 
-
+    # Prepare data from json file, then submit to sentiment analyzer.
     data_source = ForumDataSource()
-    input_data = data_source.load_from_file('data/reddit/Monero_comments_1598932800_1596254400.json.gz')
+    # Just pick the first set of comments
+    filenames = glob.glob('data/reddit/*_comments_*.json.gz')
+    filename = filenames[0]
+    print(f'Loading data from {filename}')
+    input_data: pd.DataFrame = data_source.load_from_file(filenames[0])
 
     sentiment_analyzer = SentimentAnalyzer()
 
-    # Just use 32 records for now ( faster )
-    r = sentiment_analyzer.predict(input_data[:32])
+    # Just use a subset of the records ( faster )
+    r = sentiment_analyzer.predict(input_data[:100])
 
     # Set pandas display options (more space for data)
     pd.set_option("display.max_columns", 500)
@@ -190,6 +208,7 @@ if __name__ == '__main__':
     print(r[['text','prediction','sentiment_score']])
 
     # Plot hourly mean of sentiment scores
-    df = load_report()
+    report = load_report()
+    df = report.data
     df.index = pd.to_datetime(df.date)
     df.resample("H").mean().plot(title='Hourly mean')
