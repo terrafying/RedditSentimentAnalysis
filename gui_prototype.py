@@ -123,14 +123,9 @@ class MainWindow(object):
         self.collect_data_button.pack(side=LEFT)
         self.left_pane.add(self.collect_data_button)
 
-        self.build_report_button = Button(text='Build Report', width=15, height=1, command=self.build_report,
-                                          state=DISABLED)
+        self.build_report_button = Button(text='Build Report', width=15, height=1, command=self.build_report)
         self.build_report_button.pack(side=LEFT)
         self.left_pane.add(self.build_report_button)
-
-        self.load_report_button = Button(text='Load Report', width=15, height=1, command=self.open_report)
-        self.load_report_button.pack(side=LEFT)
-        self.left_pane.add(self.load_report_button)
 
         # the right hand pane contains formatted data gathered from pushshift and analyzed by the analyzer
         # while left_pane is reserved for control button widgets
