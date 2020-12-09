@@ -60,14 +60,3 @@ if __name__ == '__main__':
 
                 print('prediction for ' + sentence)
                 print(topic)
-    # p = topic_model.predict(vectorizer.fit_transform(['this is a new sentence about bitcoin'.split()]))
-    # print(p)
-    # Fit the middle layer of the topic model
-    # tm_layer2 = ct.Corex(n_hidden=10)
-    # tm_layer2.fit(topic_model.labels)
-    #
-    # # Fit the top layer to the topic model
-    # tm_layer3 = ct.Corex(n_hidden=1)
-    # tm_layer3.fit(tm_layer2.labels)
-    #
-    # vt.vis_hierarchy([topic_model, tm_layer2, tm_layer3], column_label=words, max_edges=200, prefix='topic-model-example')
