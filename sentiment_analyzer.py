@@ -69,10 +69,10 @@ class SentimentAnalyzer(object):
                 return_tensors='pt',  # Return pytorch tensors.
             )
 
-            # Add the encoded sentence to the list.
+            # Add the encoded sentence to the list
             input_ids.append(encoded_dict['input_ids'])
 
-            # And its attention mask (simply differentiates padding from non-padding).
+            # Add the attention mask, differentiates padding from non-padding in the sentence.
             attention_masks.append(encoded_dict['attention_mask'])
         return input_ids, attention_masks
 
