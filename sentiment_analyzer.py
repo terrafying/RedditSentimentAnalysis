@@ -52,19 +52,14 @@ class SentimentAnalyzer(object):
 
 
     def ids(self, text: List[str]):
-        # Tokenize all of the sentences and map the tokens to thier word IDs.
+        # Tokenize all of the sentences and map the tokens to their word IDs.
         input_ids = []
         attention_masks = []
 
         # For every sentence...
         for sent in text:
-            # `encode_plus` will:
-            #   (1) Tokenize the sentence.
-            #   (2) Prepend the `[CLS]` token to the start.
-            #   (3) Append the `[SEP]` token to the end.
-            #   (4) Map tokens to their IDs.
-            #   (5) Pad or truncate the sentence to `max_length`
-            #   (6) Create attention masks for [PAD] tokens.
+            # tokenizes the sentence, encodes the sentence using standard NLTK special tokens to enable processing
+            # returns pytorch readable tensors
             encoded_dict = self.tokenizer.encode_plus(
                 sent,  # Sentence to encode.
                 add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
