@@ -28,7 +28,10 @@ if __name__ == '__main__':
     words = list(np.asarray(vectorizer.get_feature_names()))
 
     # Train the CorEx topic model, with some forum-specific anchor words
-    topic_model = ct.Corex(n_hidden=50, anchors=[['xmr','monero'], ['btc', 'bitcoin', 'satoshi', 'nakamoto'], ['ltc', 'litecoin'], ['xrp', 'ripple'], ['tezos'], 'exchange'])  # Define the number of latent (hidden) topics to use.
+    topic_model = ct.Corex(n_hidden=50, anchors=[['xmr','monero'], ['btc', 'bitcoin', 'satoshi', 'nakamoto'],
+                                                 ['ltc', 'litecoin'], ['xrp', 'ripple'], ['tezos'], 'exchange'])
+
+    # Define the number of latent (hidden) topics to use.
     topic_model.fit(doc_word, words=words)
 
     # Print all topics from the model
