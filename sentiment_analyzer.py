@@ -157,16 +157,20 @@ class Report(object):
     """
     Report object to contain Reddit data, plus convenience functions
     """
-    def __init__(self, data: pd.DataFrame, name='report', date_start=0, date_end=0):
+    def __init__(self, data: pd.DataFrame, name='report', info=dict()):
         self._name = name
         self._data = data
-        self._date_start = date_start
-        self._date_end = date_end
+        self._info = info
         pass
 
     def save(self, directory='data/reports'):
-        with open(os.path.join(directory, self._name + '.csv'), 'w') as f:
+        report_folder = os.path.join(directory, self._name)
+        if not os.path.exists(report_folder):
+            os.mkdir(report_folder)
+        with open(os.path.join(report_folder, 'data.csv'), 'w') as f:
             f.write(self._data.to_csv())
+        with open(os.path.join(report_folder, 'info.json')) as f:
+            json.dump(self._info, f)
 
     def __str__(self):
         s = f"""

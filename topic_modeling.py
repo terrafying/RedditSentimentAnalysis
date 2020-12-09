@@ -9,8 +9,8 @@ from corextopic import vis_topic as vt
 
 from sklearn.feature_extraction.text import CountVectorizer
 
-# Transform 20 newsgroup data into a sparse matrix
 from gather_data import ForumDataSource
+
 
 if __name__ == '__main__':
     vectorizer = CountVectorizer(stop_words='english', max_features=20000, binary=True)
@@ -37,7 +37,7 @@ if __name__ == '__main__':
         topic_words,_ = zip(*topic)
         print('{}: '.format(n) + ','.join(topic_words))
 
-    topic_model.save(f'{sub}_topic_model.pkl')
+    topic_model.save(f'data/models/{sub}_topic_model.pkl')
 
     test_sentences = [
         'i am going to sell my btc, thanks for sharing',
@@ -59,17 +59,12 @@ if __name__ == '__main__':
                 print(topic)
     # p = topic_model.predict(vectorizer.fit_transform(['this is a new sentence about bitcoin'.split()]))
     # print(p)
-    # Train a second layer to the topic model
+    # Fit the middle layer of the topic model
     # tm_layer2 = ct.Corex(n_hidden=10)
     # tm_layer2.fit(topic_model.labels)
     #
-    # # Train a third layer to the topic model
+    # # Fit the top layer to the topic model
     # tm_layer3 = ct.Corex(n_hidden=1)
     # tm_layer3.fit(tm_layer2.labels)
-    #
-    # # If you have graphviz installed, then you can output visualizations of the hierarchial topic model to
-    # #   your current working directory.
-    # # One can also create custom visualizations of the hierarchy
-    # #   by properly making use of the labels attribute of each layer.
     #
     # vt.vis_hierarchy([topic_model, tm_layer2, tm_layer3], column_label=words, max_edges=200, prefix='topic-model-example')

@@ -8,7 +8,7 @@ from tkcalendar import DateEntry
 from datetime import date, datetime
 import re
 
-from sentiment_analyzer import Report
+from sentiment_analyzer import Report, SentimentAnalyzer
 from sentiment_intensity import plot_sentiment_intensity_in_frame, apply_sentiment_intensity, plot_sentiment_intensity
 
 # global variables
@@ -140,9 +140,6 @@ class MainWindow(object):
         self.pane.add(self.left_pane)
         self.pane.add(self.right_pane)
 
-
-
-
         self.pane.pack(fill=BOTH, expand=True, side=TOP)
         self.pane.configure(sashrelief=RAISED)
 
@@ -215,7 +212,11 @@ class MainWindow(object):
             print(active_file)
             sub_name = os.path.basename(active_file).split('_')[0]
             df = self.data_source.load_from_file(active_file)
-            df = apply_sentiment_intensity(df)
+            if self.method_selection.get() == 'quick':
+                df = apply_sentiment_intensity(df)
+            else:
+                sentiment_analyzer = SentimentAnalyzer()
+                df = sentiment_analyzer.predict(df[::20]) # every Nth record - it is still too slow to process all records
             # self.report = Report(df, name=sub_name)
             self.show_report(df)
         except FileNotFoundError as e:
