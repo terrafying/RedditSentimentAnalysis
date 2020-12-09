@@ -114,7 +114,7 @@ class ForumDataSource(object):
         """
         if gather_type == 'comments':
             gen: Generator[NamedTuple, None, None] = self.api.search_comments(
-                subreddit='Cryptocurrency',
+                subreddit=subreddit,
                 before=before,
                 after=after,
                 limit=MAX_ITEMS)
