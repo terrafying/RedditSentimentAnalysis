@@ -1,15 +1,15 @@
 import os
 import calendar
 from tkinter import *
-from tkinter import filedialog, messagebox, simpledialog
+from tkinter import filedialog, messagebox
 import matplotlib
 from gather_data import ForumDataSource
 from tkcalendar import DateEntry
 from datetime import date, datetime
 import re
 
-from sentiment_analyzer import Report, SentimentAnalyzer
-from sentiment_intensity import plot_sentiment_intensity_in_frame, apply_sentiment_intensity, plot_sentiment_intensity
+from sentiment_analyzer import SentimentAnalyzer
+from sentiment_intensity import plot_sentiment_intensity_in_frame, apply_sentiment_intensity
 
 # global variables
 matplotlib.use("TkAgg")
@@ -62,9 +62,8 @@ class CalendarWindow(object):
         self.b = Button(top, text='Ok', command=self.cleanup)
         self.b.pack()
 
+    # Function to deal with weird difference between date and datetime objects
     def cleanup(self):
-        # Function to deal with weird difference between date and datetime objects
-
         def to_epoch(d: datetime.date):
             return calendar.timegm(d.timetuple())
 
@@ -75,7 +74,6 @@ class CalendarWindow(object):
 
 
 # class for filebrowser to save file
-# TODO: set this to write json object returned from pushshift to file_to_save
 class FileBrowserSave(object):
     def __init__(self, master):
         global active_file
@@ -84,7 +82,6 @@ class FileBrowserSave(object):
 
 
 # class for filebrowser to open file
-# TODO: set this to read a saved json object
 class FileBrowserOpen(object):
     def __init__(self, master):
         global active_file
@@ -143,21 +140,17 @@ class MainWindow(object):
         self.pane.pack(fill=BOTH, expand=True, side=TOP)
         self.pane.configure(sashrelief=RAISED)
 
-
         self.data_source = ForumDataSource()
         # To contain extra windows
         self.popup_window = None
         self.w = None
         self.calendar = None
 
-
-
-
     def add_radio_button(self):
         label = Label(root,
-                 text="""Sentiment analysis method""",
-                 justify=LEFT,
-                 padx=20)
+                      text="""Sentiment analysis method""",
+                      justify=LEFT,
+                      padx=20)
         # label.pack()
 
         self.left_pane.add(label)
@@ -175,9 +168,6 @@ class MainWindow(object):
         self.left_pane.add(R2)
 
         # self.left_pane.pack(side=TOP)
-
-
-
 
     # popup window to select daterange and subreddit to query, enables collect data when closed
     # if a subreddit name has been entered
@@ -216,8 +206,8 @@ class MainWindow(object):
                 df = apply_sentiment_intensity(df)
             else:
                 sentiment_analyzer = SentimentAnalyzer()
-                df = sentiment_analyzer.predict(df[::20]) # every Nth record - it is still too slow to process all records
-            # self.report = Report(df, name=sub_name)
+                df = sentiment_analyzer.predict(
+                    df[::20])  # every Nth record - it is still too slow to process all records
             self.show_report(df)
         except FileNotFoundError as e:
             messagebox.showerror("Error",
@@ -226,11 +216,8 @@ class MainWindow(object):
 
     # Display report inside pane
     def show_report(self, df):
-        # plot_sentiment_intensity(df, sub_name)
         canvas_frame = plot_sentiment_intensity_in_frame(df, self.master, sub_name)
         self.right_pane.add(canvas_frame)
-        # canvas_frame.pack()
-        # self.pane.pack()
 
     # calendar function - only enable data collection once a subreddit and a date have been chosen
     def calendar(self):
