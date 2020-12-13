@@ -1,0 +1,321 @@
+strict digraph {
+	node [shape=point];
+	n0_30 -> n1_6 [penwidth=0.73];
+	n0_30 -> n1_7 [penwidth=0.00];
+	n0_30 -> n1_8 [penwidth=0.00];
+	n0_36 -> n1_6 [penwidth=0.00];
+	n0_36 -> n1_7 [penwidth=0.89];
+	n0_36 -> n1_8 [penwidth=0.00];
+	n0_42 -> n1_5 [penwidth=0.35];
+	n0_42 -> n1_6 [penwidth=0.00];
+	n0_42 -> n1_7 [penwidth=0.00];
+	n0_42 -> n1_8 [penwidth=0.00];
+	n0_39 -> n1_3 [penwidth=0.18];
+	n0_39 -> n1_5 [penwidth=0.00];
+	n0_39 -> n1_6 [penwidth=0.00];
+	n0_39 -> n1_7 [penwidth=0.00];
+	n0_39 -> n1_8 [penwidth=0.00];
+	n0_45 -> n1_0 [penwidth=0.00];
+	n0_45 -> n1_4 [penwidth=0.00];
+	n0_45 -> n1_5 [penwidth=0.00];
+	n0_45 -> n1_6 [penwidth=0.16];
+	n0_45 -> n1_7 [penwidth=0.00];
+	n0_45 -> n1_8 [penwidth=0.00];
+	n0_48 -> n1_1 [penwidth=0.05];
+	n0_48 -> n1_5 [penwidth=0.00];
+	n0_48 -> n1_6 [penwidth=0.00];
+	n0_48 -> n1_7 [penwidth=0.00];
+	n0_48 -> n1_8 [penwidth=0.00];
+	n0_2 -> n1_1 [penwidth=2.57];
+	n0_2 -> n1_8 [penwidth=0.00];
+	n0_5 -> n1_0 [penwidth=0.12];
+	n0_5 -> n1_6 [penwidth=0.00];
+	n0_5 -> n1_7 [penwidth=0.00];
+	n1_0 -> n2_0 [penwidth=2.55];
+	n1_6 -> n2_0 [penwidth=0.55];
+	n0_8 -> n1_2 [penwidth=0.18];
+	n0_8 -> n1_4 [penwidth=0.00];
+	n0_8 -> n1_7 [penwidth=0.00];
+	n0_14 -> n1_6 [penwidth=0.00];
+	n0_14 -> n1_7 [penwidth=0.00];
+	n0_14 -> n1_8 [penwidth=0.45];
+	n1_3 -> n2_0 [penwidth=0.68];
+	n0_11 -> n1_0 [penwidth=0.39];
+	n0_11 -> n1_6 [penwidth=0.00];
+	n0_11 -> n1_7 [penwidth=0.00];
+	n0_11 -> n1_8 [penwidth=0.00];
+	n0_17 -> n1_0 [penwidth=0.38];
+	n0_17 -> n1_6 [penwidth=0.00];
+	n0_17 -> n1_7 [penwidth=0.00];
+	n0_17 -> n1_8 [penwidth=0.00];
+	n0_23 -> n1_5 [penwidth=0.71];
+	n0_23 -> n1_6 [penwidth=0.00];
+	n0_23 -> n1_7 [penwidth=0.00];
+	n0_23 -> n1_8 [penwidth=0.00];
+	n0_20 -> n1_5 [penwidth=0.17];
+	n0_20 -> n1_6 [penwidth=0.00];
+	n0_20 -> n1_7 [penwidth=0.00];
+	n0_26 -> n1_1 [penwidth=0.03];
+	n0_26 -> n1_4 [penwidth=0.00];
+	n0_26 -> n1_7 [penwidth=0.00];
+	n0_29 -> n1_0 [penwidth=0.03];
+	n0_29 -> n1_5 [penwidth=0.00];
+	n0_35 -> n1_0 [penwidth=0.27];
+	n0_35 -> n1_6 [penwidth=0.00];
+	n0_35 -> n1_7 [penwidth=0.00];
+	n0_35 -> n1_8 [penwidth=0.00];
+	n0_32 -> n1_0 [penwidth=0.55];
+	n0_32 -> n1_6 [penwidth=0.00];
+	n0_32 -> n1_7 [penwidth=0.00];
+	n0_32 -> n1_8 [penwidth=0.00];
+	n0_38 -> n1_0 [penwidth=0.38];
+	n0_38 -> n1_6 [penwidth=0.00];
+	n0_38 -> n1_7 [penwidth=0.00];
+	n0_38 -> n1_8 [penwidth=0.00];
+	n0_41 -> n1_3 [penwidth=0.24];
+	n0_41 -> n1_6 [penwidth=0.00];
+	n0_41 -> n1_7 [penwidth=0.00];
+	n0_41 -> n1_8 [penwidth=0.00];
+	n0_47 -> n1_3 [penwidth=0.22];
+	n0_47 -> n1_5 [penwidth=0.00];
+	n0_47 -> n1_6 [penwidth=0.00];
+	n0_47 -> n1_7 [penwidth=0.00];
+	n0_47 -> n1_8 [penwidth=0.00];
+	n0_44 -> n1_4 [penwidth=1.05];
+	n0_44 -> n1_8 [penwidth=0.00];
+	n0_1 -> n1_2 [penwidth=1.05];
+	n0_7 -> n1_0 [penwidth=0.91];
+	n0_7 -> n1_6 [penwidth=0.00];
+	n0_7 -> n1_7 [penwidth=0.00];
+	n0_7 -> n1_8 [penwidth=0.00];
+	n1_2 -> n2_0 [penwidth=0.00];
+	n0_4 -> n1_0 [penwidth=1.13];
+	n0_4 -> n1_6 [penwidth=0.00];
+	n0_4 -> n1_7 [penwidth=0.00];
+	n0_4 -> n1_8 [penwidth=0.00];
+	n0_10 -> n1_1 [penwidth=0.04];
+	n0_10 -> n1_4 [penwidth=0.00];
+	n0_10 -> n1_5 [penwidth=0.00];
+	n0_10 -> n1_6 [penwidth=0.00];
+	n0_10 -> n1_7 [penwidth=0.00];
+	n0_10 -> n1_8 [penwidth=0.00];
+	n0_16 -> n1_3 [penwidth=0.04];
+	n0_16 -> n1_5 [penwidth=0.00];
+	n0_16 -> n1_6 [penwidth=0.00];
+	n0_16 -> n1_7 [penwidth=0.00];
+	n1_5 -> n2_0 [penwidth=0.54];
+	n0_13 -> n1_0 [penwidth=0.38];
+	n0_13 -> n1_6 [penwidth=0.00];
+	n0_13 -> n1_7 [penwidth=0.00];
+	n0_13 -> n1_8 [penwidth=0.00];
+	n0_19 -> n1_6 [penwidth=0.00];
+	n0_19 -> n1_7 [penwidth=0.66];
+	n0_19 -> n1_8 [penwidth=0.00];
+	n1_8 -> n2_0 [penwidth=0.23];
+	n0_22 -> n1_0 [penwidth=0.88];
+	n0_22 -> n1_6 [penwidth=0.00];
+	n0_22 -> n1_7 [penwidth=0.00];
+	n0_22 -> n1_8 [penwidth=0.00];
+	n0_28 -> n1_5 [penwidth=0.33];
+	n0_28 -> n1_6 [penwidth=0.00];
+	n0_28 -> n1_7 [penwidth=0.00];
+	n0_28 -> n1_8 [penwidth=0.00];
+	n0_25 -> n1_4 [penwidth=1.28];
+	n0_25 -> n1_6 [penwidth=0.00];
+	n0_25 -> n1_7 [penwidth=0.00];
+	n0_25 -> n1_8 [penwidth=0.00];
+	n0_31 -> n1_0 [penwidth=0.40];
+	n0_31 -> n1_6 [penwidth=0.00];
+	n0_31 -> n1_7 [penwidth=0.00];
+	n0_31 -> n1_8 [penwidth=0.00];
+	n0_34 -> n1_1 [penwidth=0.03];
+	n0_34 -> n1_5 [penwidth=0.00];
+	n0_34 -> n1_6 [penwidth=0.00];
+	n0_40 -> n1_1 [penwidth=0.03];
+	n0_37 -> n1_3 [penwidth=0.51];
+	n0_37 -> n1_6 [penwidth=0.00];
+	n0_37 -> n1_7 [penwidth=0.00];
+	n0_37 -> n1_8 [penwidth=0.00];
+	n0_43 -> n1_2 [penwidth=0.24];
+	n0_43 -> n1_5 [penwidth=0.00];
+	n0_43 -> n1_6 [penwidth=0.00];
+	n0_43 -> n1_7 [penwidth=0.00];
+	n0_43 -> n1_8 [penwidth=0.00];
+	n0_46 -> n1_6 [penwidth=0.40];
+	n0_46 -> n1_7 [penwidth=0.00];
+	n0_49 -> n1_1 [penwidth=0.05];
+	n0_49 -> n1_5 [penwidth=0.00];
+	n0_49 -> n1_6 [penwidth=0.00];
+	n0_49 -> n1_7 [penwidth=0.00];
+	n0_49 -> n1_8 [penwidth=0.00];
+	n0_0 -> n1_1 [penwidth=4.65];
+	n0_0 -> n1_6 [penwidth=0.00];
+	n0_0 -> n1_7 [penwidth=0.00];
+	n0_0 -> n1_8 [penwidth=0.00];
+	n1_1 -> n2_0 [penwidth=0.22];
+	n0_3 -> n1_2 [penwidth=0.24];
+	n0_3 -> n1_4 [penwidth=0.00];
+	n0_3 -> n1_5 [penwidth=0.00];
+	n0_3 -> n1_6 [penwidth=0.00];
+	n0_3 -> n1_7 [penwidth=0.00];
+	n0_9 -> n1_0 [penwidth=1.24];
+	n0_9 -> n1_6 [penwidth=0.00];
+	n0_9 -> n1_7 [penwidth=0.00];
+	n0_9 -> n1_8 [penwidth=0.00];
+	n1_4 -> n2_0 [penwidth=0.24];
+	n0_6 -> n1_3 [penwidth=0.13];
+	n0_6 -> n1_5 [penwidth=0.00];
+	n0_6 -> n1_6 [penwidth=0.00];
+	n0_6 -> n1_7 [penwidth=0.00];
+	n0_12 -> n1_6 [penwidth=0.00];
+	n0_12 -> n1_7 [penwidth=0.00];
+	n0_12 -> n1_8 [penwidth=0.25];
+	n1_7 -> n2_0 [penwidth=0.48];
+	n0_15 -> n1_0 [penwidth=0.64];
+	n0_15 -> n1_6 [penwidth=0.00];
+	n0_15 -> n1_7 [penwidth=0.00];
+	n0_15 -> n1_8 [penwidth=0.00];
+	n0_21 -> n1_0 [penwidth=0.69];
+	n0_21 -> n1_6 [penwidth=0.00];
+	n0_21 -> n1_7 [penwidth=0.00];
+	n0_21 -> n1_8 [penwidth=0.00];
+	n0_18 -> n1_3 [penwidth=0.23];
+	n0_18 -> n1_5 [penwidth=0.00];
+	n0_18 -> n1_6 [penwidth=0.00];
+	n0_18 -> n1_7 [penwidth=0.00];
+	n0_18 -> n1_8 [penwidth=0.00];
+	n0_24 -> n1_0 [penwidth=0.49];
+	n0_24 -> n1_6 [penwidth=0.00];
+	n0_24 -> n1_7 [penwidth=0.00];
+	n0_24 -> n1_8 [penwidth=0.00];
+	n0_27 -> n1_2 [penwidth=1.26];
+	n0_27 -> n1_7 [penwidth=0.00];
+	n0_33 -> n1_3 [penwidth=0.53];
+	n0_33 -> n1_5 [penwidth=0.00];
+	n0_33 -> n1_6 [penwidth=0.00];
+	n0_33 -> n1_7 [penwidth=0.00];
+	n0_33 -> n1_8 [penwidth=0.00];
+	n0_30 [label="30:life trying family
+financial job innovation",shape=none,fontcolor="black"]
+	n0_36 [label="36:having high closed
+mention longer volatile",shape=none,fontcolor="black"]
+	n0_42 [label="42:like looks sounds
+learning bought left",shape=none,fontcolor="black"]
+	n0_39 [label="39:liquidity uniswap pool
+coinbase listed contracts",shape=none,fontcolor="black"]
+	n0_45 [label="45:asset inflation come
+rate said lower",shape=none,fontcolor="black"]
+	n0_48 [label="48:moons moon sub upvotes
+initial subs",shape=none,fontcolor="black"]
+	n0_2 [label="2:inaccurately flaired wi
+ki_accurately_flairing_co
+ntent submission
+resources click",shape=none,fontcolor="black"]
+	n0_5 [label="5:article articles
+results game publishers
+duplicate",shape=none,fontcolor="black"]
+	n1_0 [shape=circle,margin="0,0",style=filled,fillcolor=black,fontcolor=white,height=0.60,label="0"]
+	n1_6 [shape=circle,margin="0,0",style=filled,fillcolor=black,fontcolor=white,height=0.01,label="6"]
+	n0_8 [label="8:removed post comment
+karma submissions 500",shape=none,fontcolor="black"]
+	n0_14 [label="14:tax trump taxes biden
+north states",shape=none,fontcolor="black"]
+	n1_3 [shape=circle,margin="0,0",style=filled,fillcolor=black,fontcolor=white,height=0.05,label="3"]
+	n0_11 [label="11:allow policies company
+facebook election members",shape=none,fontcolor="black"]
+	n0_17 [label="17:transactions
+transaction fees block
+network fee",shape=none,fontcolor="black"]
+	n0_23 [label="23:satoshi nakamoto anti
+evidence facts fraud",shape=none,fontcolor="black"]
+	n0_20 [label="20:piece john called
+games toilet mcafee",shape=none,fontcolor="black"]
+	n0_26 [label="26:xdai hny faucet
+testnet honeyswap free",shape=none,fontcolor="black"]
+	n0_29 [label="29:sun justin bunch bcash
+worries trigger",shape=none,fontcolor="black"]
+	n0_35 [label="35:time low later new
+buying looking",shape=none,fontcolor="black"]
+	n0_32 [label="32:different thing say
+seed better completely",shape=none,fontcolor="black"]
+	n0_38 [label="38:coins month sure ll
+stake locked",shape=none,fontcolor="black"]
+	n0_41 [label="41:alt alts season defi
+aave gambling",shape=none,fontcolor="black"]
+	n0_47 [label="47:xrp ripple feel bat
+shitcoin dca",shape=none,fontcolor="black"]
+	n0_44 [label="44:50 days 40 link
+sidelines 150",shape=none,fontcolor="black"]
+	n0_1 [label="1:wiki_cryptowikis_progra
+m_ abstract cryptowikis
+biases wiki_exchanges
+wiki_short_description",shape=none,fontcolor="black"]
+	n0_7 [label="7:run market bull long
+term sell",shape=none,fontcolor="black"]
+	n1_2 [shape=circle,margin="0,0",style=filled,fillcolor=black,fontcolor=white,height=0.13,label="2"]
+	n0_4 [label="4:crypto money want
+currency value world",shape=none,fontcolor="black"]
+	n0_10 [label="10:gif giphy emote
+downsized emo_pack_1
+x200b",shape=none,fontcolor="black"]
+	n0_16 [label="16:strategy peter schiff
+pooh wins donate",shape=none,fontcolor="black"]
+	n1_5 [shape=circle,margin="0,0",style=filled,fillcolor=black,fontcolor=white,height=0.02,label="5"]
+	n0_13 [label="13:reserve violation
+search referral offs peer",shape=none,fontcolor="black"]
+	n0_19 [label="19:rules characters
+submit utm_medium
+utm_source memes",shape=none,fontcolor="black"]
+	n1_8 [shape=circle,margin="0,0",style=filled,fillcolor=black,fontcolor=white,height=0.00,label="8"]
+	n0_22 [label="22:ve blockchain based
+smart projects seen",shape=none,fontcolor="black"]
+	n0_28 [label="28:private keys hacked
+key trust shouldn",shape=none,fontcolor="black"]
+	n0_25 [label="25:required old account
+make hal finney",shape=none,fontcolor="black"]
+	n0_31 [label="31:wallet exchange
+binance users send safe",shape=none,fontcolor="black"]
+	n0_34 [label="34:sharing dash thanks ah
+girlfriend zec",shape=none,fontcolor="black"]
+	n0_40 [label="40:green candies sleep
+night coingecko plenty",shape=none,fontcolor="black"]
+	n0_37 [label="37:price cap higher
+selling positive strong",shape=none,fontcolor="black"]
+	n0_43 [label="43:btc bitcoin eth buy
+owns 450",shape=none,fontcolor="black"]
+	n0_46 [label="46:good luck love hope
+thats seeing",shape=none,fontcolor="black"]
+	n0_49 [label="49:insane yeah best oh 90
+hahaha",shape=none,fontcolor="black"]
+	n0_0 [label="0:moderators compose
+performed concerns
+automatically contact",shape=none,fontcolor="black"]
+	n1_1 [shape=circle,margin="0,0",style=filled,fillcolor=black,fontcolor=white,height=0.36,label="1"]
+	n0_3 [label="3:posts 2fr thread
+resubmit daily
+2fcryptocurrency",shape=none,fontcolor="black"]
+	n2_0 [shape=point,height=0.12]
+	n0_9 [label="9:don people just think
+know really",shape=none,fontcolor="black"]
+	n1_4 [shape=circle,margin="0,0",style=filled,fillcolor=black,fontcolor=white,height=0.02,label="4"]
+	n0_6 [label="6:twitter status wright
+craig fundamentally
+github",shape=none,fontcolor="black"]
+	n0_12 [label="12:admin victor major
+skills cobra 37",shape=none,fontcolor="black"]
+	n1_7 [shape=circle,margin="0,0",style=filled,fillcolor=black,fontcolor=white,height=0.01,label="7"]
+	n0_15 [label="15:discussion direct
+instead try security
+cryptocurrencies",shape=none,fontcolor="black"]
+	n0_21 [label="21:point gt development
+code created open",shape=none,fontcolor="black"]
+	n0_18 [label="18:google rug peoples
+accepted face 05",shape=none,fontcolor="black"]
+	n0_24 [label="24:ledger nano store
+trezor hardware attacks",shape=none,fontcolor="black"]
+	n0_27 [label="27:exchanges wallets
+content considered
+quality ethereum",shape=none,fontcolor="black"]
+	n0_33 [label="33:months year ago red
+biggest end",shape=none,fontcolor="black"]
+}
