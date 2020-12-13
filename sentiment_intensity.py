@@ -1,3 +1,5 @@
+import os
+
 import matplotlib.pyplot as plt
 import nltk
 import pandas as pd
@@ -50,17 +52,21 @@ def plot_sentiment_intensity(df, name=''):
     #     cmap=plt.cm.rainbow)
 
 
-"""
-This is a convenience method - you don't have to use it, but it's one way to display a pyplot chart inside the GUI.
 
-Makes a pyplot inside a Frame
-
-Input: 
-DataFrame containing sentiment intensity scores (from apply_sentiment_intensity).
-
-Output: A tkinter Frame containing the plot
-"""
 def plot_sentiment_intensity_in_frame(df, master, sub_name):
+    """
+    This is a method to display a PyPlot chart inside the GUI.
+
+    Makes a pyplot inside a Frame
+
+    Parameters
+    ----------
+    df: DataFrame containing sentiment intensity scores (from apply_sentiment_intensity).
+
+    Returns
+    --------
+    A tkinter Frame containing the plot
+    """
     # the figure that will contain the plot
     fig = Figure(figsize=(5, 5),
                  dpi=100)
@@ -97,15 +103,18 @@ def plot_sentiment_intensity_in_frame(df, master, sub_name):
 
     return canvas_frame
 
+import glob
 
 if __name__ == '__main__':
     # Monero subreddit comment data
 
-    filename = 'data/reddit/Monero_comments_1598932800_1596254400.json.gz'
+    filenames = glob.glob('data/reddit/*_comments_*.json.gz')
+    filename = filenames[0]
 
     data_source = ForumDataSource()
     df = data_source.load_from_file(filename)
 
     df = apply_sentiment_intensity(df)
-    df.index = pd.to_datetime(df.date)
-    plot_sentiment_intensity(df)
+    # df.index = pd.to_datetime(df.date)
+    sub_name = os.path.basename(filename).split('_')[0]
+    plot_sentiment_intensity(df.dropna(), name=sub_name)

@@ -11,12 +11,18 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 from gather_data import ForumDataSource
 
+import glob, os, pickle
 
 if __name__ == '__main__':
     vectorizer = CountVectorizer(stop_words='english', max_features=20000, binary=True)
     data_source = ForumDataSource()
-    sub = 'Cryptocurrency'
-    input_data = data_source.load_from_file(f'data/reddit/{sub}_comments_1598932800_1596254400.json.gz')
+
+    filenames = glob.glob('data/reddit/*_comments_*.json.gz')
+    filename = filenames[0]
+
+    sub_name = os.path.basename(filename).split('_')[0]
+
+    input_data = data_source.load_from_file(filename)
     # Each "Document" is a text comment
     doc_word = vectorizer.fit_transform(input_data.text)
     doc_word = ss.csr_matrix(doc_word)
@@ -27,20 +33,32 @@ if __name__ == '__main__':
     # Get words that label the columns
     words = list(np.asarray(vectorizer.get_feature_names()))
 
-    # Train the CorEx topic model, with some forum-specific anchor words
-    topic_model = ct.Corex(n_hidden=50, anchors=[['xmr','monero'], ['btc', 'bitcoin', 'satoshi', 'nakamoto'],
-                                                 ['ltc', 'litecoin'], ['xrp', 'ripple'], ['tezos'], 'exchange'])
 
-    # Define the number of latent (hidden) topics to use.
-    topic_model.fit(doc_word, words=words)
+    topic_model_filename = f'data/models/{sub_name}_topic_model.pkl'
+    if os.path.exists(topic_model_filename):
+        topic_model = pickle.load(open(topic_model_filename))
+    else:
+        # Train the CorEx topic model, with some forum-specific anchor words
+        topic_model = ct.Corex(n_hidden=50, anchors=[['xmr', 'monero'],
+                                                     ['btc', 'bitcoin', 'satoshi'],
+                                                     ['stellar', 'xlm'],
+                                                     ['ltc', 'litecoin'],
+                                                     ['xrp', 'ripple'],
+                                                     ['tezos'],
+                                                     ['eth', 'ethereum', 'vitalik'],
+                                                     ['binance', 'coinbase']])
+
+        # Define the number of latent (hidden) topics to use.
+        topic_model.fit(doc_word, words=words)
+        topic_model.save(topic_model_filename)
+
 
     # Print all topics from the model
     topics = topic_model.get_topics()
-    for n,topic in enumerate(topics):
-        topic_words,_ = zip(*topic)
+    for n, topic in enumerate(topics):
+        topic_words, _ = zip(*topic)
         print('{}: '.format(n) + ','.join(topic_words))
 
-    topic_model.save(f'data/models/{sub}_topic_model.pkl')
 
     test_sentences = [
         'i am going to sell my btc, thanks for sharing',

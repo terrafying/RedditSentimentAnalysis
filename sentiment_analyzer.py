@@ -195,13 +195,15 @@ if __name__ == '__main__':
     # Just pick the first set of comments
     filenames = glob.glob('data/reddit/*_comments_*.json.gz')
     filename = filenames[0]
+    sub_name = os.path.basename(filename).split('_')[0]
+
     print(f'Loading data from {filename}')
     input_data: pd.DataFrame = data_source.load_from_file(filenames[0])
 
     sentiment_analyzer = SentimentAnalyzer()
 
     # Just use a subset of the records ( faster )
-    r = sentiment_analyzer.predict(input_data[:100])
+    r = sentiment_analyzer.predict(input_data[:400])
 
     # Set pandas display options (more space for data)
     pd.set_option("display.max_columns", 500)
@@ -212,4 +214,4 @@ if __name__ == '__main__':
     report = load_report()
     df = report.data
     df.index = pd.to_datetime(df.date)
-    df.resample("H").mean().plot(title='Hourly mean')
+    df.resample("H").mean().plot(title=f'Hourly mean sentiment for {sub_name}')
