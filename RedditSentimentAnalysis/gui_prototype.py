@@ -74,20 +74,20 @@ class CalendarWindow(object):
 
 
 # class for filebrowser to save file
-class FileBrowserSave(object):
-    def __init__(self, master):
-        global active_file
-        active_file = filedialog.asksaveasfilename(initialdir='/', title='Save Report as',
-                                                   filetypes=(("json gz files", "*.gz"), ("all files", "*.*")))
-
-
-# class for filebrowser to open file
-class FileBrowserOpen(object):
-    def __init__(self, master):
-        global active_file
-        active_file = filedialog.askopenfilename(initialdir=os.getcwd(), title='Select File to Open',
-                                                 filetypes=(("json gz files", "*.gz"), ("all files", "*.*")))
-
+# class FileBrowserSave(object):
+#     def __init__(self, master):
+#         global active_file
+#         active_file = filedialog.asksaveasfilename(initialdir='/', title='Save Report as',
+#                                                    filetypes=(("json gz files", "*.gz"), ("all files", "*.*")))
+#
+#
+# # class for filebrowser to open file
+# class FileBrowserOpen(object):
+#     def __init__(self, master):
+#         global active_file
+#         active_file = filedialog.askopenfilename(initialdir=os.getcwd(), title='Select File to Open',
+#                                                  filetypes=(("json gz files", "*.gz"), ("all files", "*.*")))
+#
 
 # main gui window class
 class MainWindow(object):

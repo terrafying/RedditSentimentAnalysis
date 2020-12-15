@@ -11,6 +11,8 @@ from matplotlib.figure import Figure
 from nltk.corpus import stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
 from tkinter import Frame
+import matplotlib
+matplotlib.use('Tkagg')
 
 from gather_data import ForumDataSource
 
@@ -34,16 +36,17 @@ def apply_sentiment_intensity(df: pd.DataFrame):
     x = pd.json_normalize(df.text.apply(sia.polarity_scores))
 
     # Add date column, index by date
-    reduced_df: pd.DataFrame = df[['date']].join(x)
-    reduced_df.set_index('date', inplace=True)
+    # reduced_df: pd.DataFrame = df[['date']].join(x)
+    # reduced_df.set_index('date', inplace=True)
 
-    return reduced_df
+    return x
 
 
 """
 Input: Reddit dataframe from the ForumDataSource
 """
 def plot_sentiment_intensity(df, name=''):
+    df.set_index('date', inplace=True)
     # df.index = pd.to_datetime(df.date)
     df.resample("H").mean().plot(title=f'Hourly mean score for {name}', cmap=plt.cm.rainbow)
     # Apply moving-window average, and plot results
@@ -84,6 +87,7 @@ def plot_sentiment_intensity_in_frame(df, master, sub_name):
     canvas.get_tk_widget().pack()
 
     # Apply moving-window average, and plot results
+    df.set_index('date', inplace=True)
     df.resample("H").mean().plot(title=f'Hourly mean score for {sub_name}', ax=ax, cmap=plt.cm.rainbow)
     # df.ewm(span=100).mean().plot(
     #     label='Moving average',
@@ -104,6 +108,7 @@ def plot_sentiment_intensity_in_frame(df, master, sub_name):
     return canvas_frame
 
 import glob
+import topic_modeling
 
 if __name__ == '__main__':
     # Monero subreddit comment data
@@ -114,7 +119,20 @@ if __name__ == '__main__':
     data_source = ForumDataSource()
     df = data_source.load_from_file(filename)
 
-    df = apply_sentiment_intensity(df)
+    tm = topic_modeling.TopicModel()
+    df['topic'] = tm.predict(df)
+
+    df = df.join(apply_sentiment_intensity(df))
+
+
+    df = df[['topic','pos','neg','neu','compound','text', 'date']]
+
     # df.index = pd.to_datetime(df.date)
     sub_name = os.path.basename(filename).split('_')[0]
-    plot_sentiment_intensity(df.dropna(), name=sub_name)
+    # plot_sentiment_intensity(df.filter(), name=sub_name)
+
+    topics = tm.topic_model.get_topics()
+    topic_name = topics[9]
+    eth_df = df[pd.DataFrame(df.topic.tolist()).isin([9]).any(1).values]
+    plot_sentiment_intensity(eth_df, topic_name)
+    plt.show()

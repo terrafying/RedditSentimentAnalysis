@@ -6,9 +6,12 @@ import pandas as pd
 from pytorch_pretrained_bert.modeling import *
 from torch.utils.data import TensorDataset, SequentialSampler, DataLoader
 from transformers import BertTokenizer
-
+import matplotlib
+import matplotlib.pyplot as plt
+import topic_modeling
 from gather_data import ForumDataSource
 
+matplotlib.use('Tkagg')
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -26,22 +29,16 @@ class SentimentAnalyzer(object):
     Loads BERT model
     """
     def __init__(self):
-        # If there's a GPU available...
+        # Check for CUDA-compatible GPU
         if torch.cuda.is_available():
-
             # Tell PyTorch to use the GPU.
             self.device = torch.device("cuda")
-
             print('There are %d GPU(s) available.' % torch.cuda.device_count())
-
-            print('We will use the GPU:', torch.cuda.get_device_name(0))
-
-        # If not...
+            print('Using GPU:', torch.cuda.get_device_name(0))
         else:
-            print('No GPU available, using the CPU instead.')
+            print('No GPU available... using the CPU instead.')
             self.device = torch.device("cpu")
 
-        # Load the BERT tokenizer.
         print('Loading BERT tokenizer...')
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
@@ -76,9 +73,11 @@ class SentimentAnalyzer(object):
             attention_masks.append(encoded_dict['attention_mask'])
         return input_ids, attention_masks
 
-    def predict(self, df: pd.DataFrame):
+    def predict(self, df: pd.DataFrame) -> pd.DataFrame:
         """
-        :param df: DataFrame containing 'text' column with posts
+        Parameters
+        --------
+        df: DataFrame containing 'text' column with posts
         :return: DataFrame containing 'sentiment' (float) and 'prediction' (integer) columns
         """
         # Report the number of sentences.
@@ -162,9 +161,9 @@ class Report(object):
         report_folder = os.path.join(directory, self._name)
         if not os.path.exists(report_folder):
             os.mkdir(report_folder)
-        with open(os.path.join(report_folder, 'data.csv'), 'w') as f:
+        with open(os.path.join(report_folder, 'data.json'), 'w') as f:
             f.write(self._data.to_csv())
-        with open(os.path.join(report_folder, 'info.json')) as f:
+        with open(os.path.join(report_folder, 'info.json'), 'w') as f:
             json.dump(self._info, f)
 
     def __str__(self):
@@ -183,6 +182,15 @@ def load_report(filename='my_report.csv', directory='data/reports') -> Report:
         report = Report(pd.read_csv(f), filename.split('.')[0])
     return report
 
+def multiplot(df, topics, sample_period="12H", r=(0, 25)):
+    fig, ax = plt.subplots()
+    for i in range(r[0], r[1]):
+        topic_df: pd.DataFrame = df[pd.DataFrame(df.topic.tolist()).isin([i]).any(1).values]
+        print('avg score for topic ' + str(topics[i][:3]))
+        print(topic_df[['sentiment_score']].mean())
+        topic_df.resample(sample_period).mean().plot(ax=ax, label=str(topics[i][0]))
+    ax.legend([','.join([topic[x][0] for x in range(3)]) for topic in topics][r[0]:r[1]])
+
 import glob
 
 if __name__ == '__main__':
@@ -193,7 +201,7 @@ if __name__ == '__main__':
     # Prepare data from json file, then submit to sentiment analyzer.
     data_source = ForumDataSource()
     # Just pick the first set of comments
-    filenames = glob.glob('data/reddit/*_comments_*.json.gz')
+    filenames = glob.glob('data/reddit/Monero_comments_*.json.gz')
     filename = filenames[0]
     sub_name = os.path.basename(filename).split('_')[0]
 
@@ -203,15 +211,29 @@ if __name__ == '__main__':
     sentiment_analyzer = SentimentAnalyzer()
 
     # Just use a subset of the records ( faster )
-    r = sentiment_analyzer.predict(input_data[:400])
+    df = sentiment_analyzer.predict(input_data[::3])
 
     # Set pandas display options (more space for data)
     pd.set_option("display.max_columns", 500)
     pd.set_option('display.width', 1000)
-    print(r[['text','prediction','sentiment_score']])
+    print(df[['text','prediction','sentiment_score']])
+
 
     # Plot hourly mean of sentiment scores
-    report = load_report()
-    df = report.data
-    df.index = pd.to_datetime(df.date)
-    df.resample("H").mean().plot(title=f'Hourly mean sentiment for {sub_name}')
+    # report = load_report()
+    # df = report.data
+    # df.index = pd.to_datetime(df.date)
+
+    # Use the topic model to get a subset of the posts
+    tm = topic_modeling.TopicModel()
+    topics = tm.topic_model.get_topics()
+    topic_name = topics[9]
+
+    df['topic'] = tm.predict(df, sub_name=sub_name)
+    eth_df = df[pd.DataFrame(df.topic.tolist()).isin([9]).any(1).values]
+    # eth_df.set_index('date', inplace=True)
+    eth_df.resample("H").mean().plot(title=f'Hourly mean sentiment for {sub_name}')
+
+    Report(df, sub_name).save()
+
+    multiplot(df, topics, sample_period="12H", r=(10,20))

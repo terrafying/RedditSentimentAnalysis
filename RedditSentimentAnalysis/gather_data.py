@@ -12,8 +12,8 @@ import os
 
 MAX_ITEMS = 100000
 
-before = int(datetime(2020, 9, 1).timestamp())
-after = int(datetime(2020, 8, 1).timestamp())
+before = int(datetime(2020, 10, 10).timestamp())
+after = int(datetime(2020, 10, 6).timestamp())
 
 
 def parse_pushshift_data(l: Generator, gather_type='comments') -> Generator[dict, None, None]:
@@ -38,11 +38,7 @@ def parse_pushshift_data(l: Generator, gather_type='comments') -> Generator[dict
                 item['text'] = item.pop('selftext')
             yield item
         except KeyError as e:
-            content_field = 'selftext'
-            yield {**c.d_,
-                   'text': c.d_[content_field]
-                   }
-            print("Body not found - Keyerror Exception. Using selftext instead.")
+            print(c.d_)
             continue
 
 # function to prompt user for the authentication values
@@ -98,7 +94,7 @@ class ForumDataSource(object):
             self.reddit = praw.Reddit(client_id=params['client_id'],
                                       client_secret=params['api_key'],
                                       user_agent='Sentiment Analyzer')
-            self.api = PushshiftAPI()
+            self.api = PushshiftAPI(backoff=10, max_retries=20)
 
 
     def gather(self, subreddit: str, gather_type='comments') -> Generator:
@@ -115,7 +111,6 @@ class ForumDataSource(object):
         if gather_type == 'comments':
             gen: Generator[NamedTuple, None, None] = self.api.search_comments(
                 subreddit=subreddit,
-                before=before,
                 after=after,
                 limit=MAX_ITEMS)
         else:
@@ -158,15 +153,15 @@ class ForumDataSource(object):
         """
         if os.path.exists(filename):
             # Todo: put this message in the GUI?
-            print('file already exists')
-        else:
-            with gzip.open(filename, 'wt', encoding="utf-8") as zipfile:
-                l = list(self.gather(subreddit, gather_type=gather_type))
-                if len(l) < 2:
-                    print('Result is really short! Not saving.')
-                    print(l)
-                else:
-                    json.dump(l, zipfile, indent=2)
+            print('file already exists... deleting it')
+            os.remove(filename)
+        with gzip.open(filename, 'wt', encoding="utf-8") as zipfile:
+            l = list(self.gather(subreddit, gather_type=gather_type))
+            if len(l) < 2:
+                print('Result is really short! Not saving.')
+                print(l)
+            else:
+                json.dump(l, zipfile, indent=2)
 
     def load_from_file(self, filename, content_column='text') -> pd.DataFrame:
         """
@@ -204,11 +199,11 @@ class ForumDataSource(object):
 
 
 if __name__ == '__main__':
-    sub = 'Stellar'
+    sub = 'Monero'
 
     data_source = ForumDataSource()
 
     # Gather sample data
-    for _gather_type in ['submissions', 'comments']:
+    for _gather_type in ['comments']: #'submissions',
         f_name = f'data/reddit/{sub}_{_gather_type}_{before}_{after}.json.gz'
         data_source.gather_to_file(f_name, subreddit=sub, gather_type=_gather_type)
