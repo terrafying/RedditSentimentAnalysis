@@ -182,9 +182,9 @@ def load_report(filename='my_report.csv', directory='data/reports') -> Report:
         report = Report(pd.read_csv(f), filename.split('.')[0])
     return report
 
-def multiplot(df, topics, sample_period="12H", r=(0, 25)):
+def multiplot(df, topics, sample_period="12H", r=range(0,5)):
     fig, ax = plt.subplots()
-    for i in range(r[0], r[1]):
+    for i in r:
         topic_df: pd.DataFrame = df[pd.DataFrame(df.topic.tolist()).isin([i]).any(1).values]
         print('avg score for topic ' + str(topics[i][:3]))
         print(topic_df[['sentiment_score']].mean())
@@ -201,7 +201,7 @@ if __name__ == '__main__':
     # Prepare data from json file, then submit to sentiment analyzer.
     data_source = ForumDataSource()
     # Just pick the first set of comments
-    filenames = glob.glob('data/reddit/Monero_comments_*.json.gz')
+    filenames = glob.glob('data/reddit/Stellar_comments_*.json.gz')
     filename = filenames[0]
     sub_name = os.path.basename(filename).split('_')[0]
 
@@ -211,7 +211,7 @@ if __name__ == '__main__':
     sentiment_analyzer = SentimentAnalyzer()
 
     # Just use a subset of the records ( faster )
-    df = sentiment_analyzer.predict(input_data[::3])
+    df = sentiment_analyzer.predict(input_data)
 
     # Set pandas display options (more space for data)
     pd.set_option("display.max_columns", 500)
@@ -225,15 +225,11 @@ if __name__ == '__main__':
     # df.index = pd.to_datetime(df.date)
 
     # Use the topic model to get a subset of the posts
-    tm = topic_modeling.TopicModel()
+    tm = topic_modeling.TopicModel(sub_name=sub_name)
     topics = tm.topic_model.get_topics()
-    topic_name = topics[9]
 
     df['topic'] = tm.predict(df, sub_name=sub_name)
-    eth_df = df[pd.DataFrame(df.topic.tolist()).isin([9]).any(1).values]
-    # eth_df.set_index('date', inplace=True)
-    eth_df.resample("H").mean().plot(title=f'Hourly mean sentiment for {sub_name}')
 
     Report(df, sub_name).save()
 
-    multiplot(df, topics, sample_period="12H", r=(10,20))
+    multiplot(df, topics, sample_period="12H", r=range(0,5))

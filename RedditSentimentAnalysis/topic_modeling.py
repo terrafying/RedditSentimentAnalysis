@@ -20,11 +20,15 @@ data_source = ForumDataSource()
 
 
 class TopicModel(object):
-    def __init__(self):
+    def __init__(self, sub_name='Monero'):
         self.vectorizer = CountVectorizer(stop_words='english', max_features=20000, binary=True)
-        filenames = glob.glob('data/reddit/*_comments_*.json.gz')
+
+        #TODO: Aggregate all scraped comments
+        filenames = glob.glob(f'data/reddit/{sub_name}_comments_*.json.gz')
         filename = filenames[0]
-        input_data: pd.DataFrame = data_source.load_from_file(filename) #HACK: speedup
+
+        input_data: pd.DataFrame = data_source.load_from_file(filename)
+
         # Each "Document" is a text comment
         self.doc_word = self.vectorizer.fit_transform(input_data.text)
         self.doc_word = ss.csr_matrix(self.doc_word)
@@ -94,7 +98,9 @@ def test():
 
     # df = pd.DataFrame()
     # df['text'] = test_sentences
-    for p in tm.predict(pd.DataFrame(test_sentences)):
+    df = pd.DataFrame()
+    df['text'] = test_sentences
+    for p in tm.predict(df):
         print(p)
 
 if __name__ == '__main__':
